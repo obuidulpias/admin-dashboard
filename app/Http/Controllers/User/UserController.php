@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
+use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -30,27 +32,20 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        if ($validator->fails()) {
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            return redirect()->route('users.index')->with('success', 'User created successfully!');
+        } catch (Exception $e) {
             return redirect()->route('users.create')
-                ->withErrors($validator)
+                ->withErrors(['error' => 'An error occurred while creating the user: ' . $e->getMessage()])
                 ->withInput();
         }
-
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
 
     /**
@@ -65,32 +60,26 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      */
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, $id)
     {
         $user = User::findOrFail($id);
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:6|confirmed',
-        ]);
+        try {
+            $user->name = $request->name;
+            $user->email = $request->email;
 
-        if ($validator->fails()) {
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+
+            return redirect()->route('users.index')->with('success', 'User updated successfully!');
+        } catch (Exception $e) {
             return redirect()->route('users.edit', $id)
-                ->withErrors($validator)
+                ->withErrors(['error' => 'An error occurred while updating the user: ' . $e->getMessage()])
                 ->withInput();
         }
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        $user->save();
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully!');
     }
 
     /**
@@ -101,7 +90,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         
         // Prevent deleting own account
-        if ($user->id === auth()->id()) {
+        if ($user->id == Auth::id()) {
             return redirect()->route('users.index')->with('error', 'You cannot delete your own account!');
         }
 
