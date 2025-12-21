@@ -8,52 +8,23 @@
 
     <!-- Sidebar -->
     <div class="sidebar" style="background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);">
-        
-        <!-- User Panel -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex" style="border-bottom: 2px solid rgba(255,255,255,0.1);">
-            <div class="image">
-                <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image" style="border: 2px solid #667eea;">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block" style="color: #fff; font-weight: 500;">
-                    {{ Auth::user()->name ?? 'Admin User' }}
-                </a>
-                <small style="color: #a0aec0;">
-                    <i class="fas fa-circle text-success" style="font-size: 0.6rem;"></i> Online
-                </small>
-            </div>
-        </div>
 
         <!-- SidebarSearch Form -->
-        <div class="form-inline mb-3">
+        <div class="sidebar-search-container px-3" style="margin-top: 10px; margin-bottom: 2px;">
             <div class="input-group" data-widget="sidebar-search">
-                <input class="form-control form-control-sidebar" type="search" placeholder="Search menu..." 
-                    aria-label="Search" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 20px;">
-                <div class="input-group-append">
-                    <button class="btn btn-sidebar" style="background: transparent; border: none; color: #a0aec0;">
-                        <i class="fas fa-search fa-fw"></i>
-                    </button>
-                </div>
+                <input class="form-control form-control-sidebar" 
+                       type="search" 
+                       placeholder="Search menu..." 
+                       aria-label="Search" 
+                       style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 10px; height: 34px;"/>
             </div>
         </div>
-
         <!-- Sidebar Menu -->
-        <nav class="mt-2">
+        <nav class="mt-1">
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" 
                 data-widget="treeview" 
                 role="menu" 
                 data-accordion="false">
-
-                <!-- Dashboard -->
-                <li class="nav-item">
-                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
-                        <i class="nav-icon fas fa-tachometer-alt" style="color: #667eea;"></i>
-                        <p style="font-weight: 500;">
-                            Dashboard
-                        </p>
-                    </a>
-                </li>
 
                 <!-- MAIN MENU Section Header -->
                 <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
@@ -707,67 +678,42 @@
 <script>
     // Enhanced multi-layer menu interaction - runs after jQuery and AdminLTE are loaded
     $(document).ready(function() {
-        console.log('Multi-layer menu enhanced scripts initialized');
-        
-        // Remove AdminLTE's default treeview behavior to avoid conflicts
-        $('[data-widget="treeview"]').off('click.lte.treeview');
-        
-        // Custom multi-level menu handler with event delegation
-        $(document).on('click', '.nav-sidebar .nav-link', function(e) {
-            const $link = $(this);
-            const $parentItem = $link.parent('.nav-item');
-            const $subMenu = $link.next('.nav-treeview');
+        // Wait for AdminLTE to fully initialize, then override its treeview behavior
+        setTimeout(function() {
+            // Remove AdminLTE's default treeview behavior
+            const $sidebar = $('[data-widget="treeview"]');
+            $sidebar.off('click.lte.treeview');
             
-            const menuText = $link.find('p').first().text().trim();
-            console.log('Menu clicked:', menuText);
-            
-            // Only handle items that have submenus
-            if ($subMenu.length > 0) {
-                e.preventDefault();
-                e.stopPropagation();
+            // Custom multi-level menu handler - using direct event binding
+            $('.nav-sidebar').off('click', '.nav-link').on('click', '.nav-link', function(e) {
+                const $link = $(this);
+                const $parentItem = $link.parent('.nav-item');
+                const $subMenu = $link.next('.nav-treeview');
                 
-                const isCurrentlyOpen = $parentItem.hasClass('menu-open');
-                
-                console.log('Has submenu, currently open:', isCurrentlyOpen);
-                console.log('Submenu element:', $subMenu);
-                console.log('Parent item classes:', $parentItem.attr('class'));
-                
-                // Close sibling menus at the same level (accordion behavior)
-                $parentItem.siblings('.nav-item').each(function() {
-                    const $sibling = $(this);
-                    if ($sibling.hasClass('menu-open')) {
-                        $sibling.removeClass('menu-open');
-                        console.log('Closed sibling menu');
-                    }
-                });
-                
-                // Toggle current menu
-                if (isCurrentlyOpen) {
-                    // Close this menu and all its children
-                    $parentItem.removeClass('menu-open');
-                    // Also close all nested children
-                    $subMenu.find('.nav-item.menu-open').removeClass('menu-open');
-                    console.log('Closed current menu and children');
-                } else {
-                    // Open this menu
-                    $parentItem.addClass('menu-open');
-                    console.log('Opened current menu - class added!');
-                    console.log('Parent item classes after:', $parentItem.attr('class'));
+                // Only handle items that have submenus
+                if ($subMenu.length > 0) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     
-                    // Check submenu state after a short delay
-                    setTimeout(() => {
-                        const computedStyle = window.getComputedStyle($subMenu[0]);
-                        console.log('Submenu max-height:', computedStyle.maxHeight);
-                        console.log('Submenu opacity:', computedStyle.opacity);
-                        console.log('Submenu display:', computedStyle.display);
-                    }, 100);
+                    const isCurrentlyOpen = $parentItem.hasClass('menu-open');
+                    
+                    // Close sibling menus at the same level (accordion behavior)
+                    $parentItem.siblings('.nav-item.menu-open').removeClass('menu-open');
+                    
+                    // Toggle current menu
+                    if (isCurrentlyOpen) {
+                        // Close this menu and all its children
+                        $parentItem.removeClass('menu-open');
+                        $subMenu.find('.nav-item.menu-open').removeClass('menu-open');
+                    } else {
+                        // Open this menu
+                        $parentItem.addClass('menu-open');
+                    }
+                    
+                    return false;
                 }
-                
-                return false;
-            } else {
-                console.log('No submenu found for this item');
-            }
-        });
+            });
+        }, 500);
         
         // Add enhanced ripple effect on all menu clicks
         $(document).on('click', '.nav-link', function(e) {
@@ -812,8 +758,7 @@
                 // Also ensure all parent menus are open
                 $item.parents('.nav-item').addClass('menu-open').children('.nav-treeview').css('display', 'block');
             });
-            console.log('Initialized open menus');
-        }, 100);
+        }, 600);
         
         // Smooth scroll in sidebar
         $('.sidebar').css({
@@ -833,17 +778,6 @@
                 $link.css('padding-left', (currentPadding - 3) + 'px');
             }
         );
-
-        // Log menu structure for debugging
-        setTimeout(function() {
-            console.log('Menu structure:', {
-                level1: $('.nav-sidebar > .nav-item').not('.nav-header').length,
-                level2: $('.nav-sidebar > .nav-item .nav-treeview > .nav-item').length,
-                level3: $('.nav-treeview .nav-treeview > .nav-item').length,
-                level4: $('.nav-treeview .nav-treeview .nav-treeview > .nav-item').length,
-                totalWithSubmenus: $('.nav-link').next('.nav-treeview').length
-            });
-        }, 200);
     });
 
     // Add ripple animation styles
