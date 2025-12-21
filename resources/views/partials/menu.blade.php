@@ -46,7 +46,7 @@
                         class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
-                            User List
+                            User Details
                         </p>
                     </a>
                 </li>
