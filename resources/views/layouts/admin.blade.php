@@ -45,9 +45,9 @@
         @include('partials.menu')
 
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
+        <div class="content-wrapper" style="margin-top: 12px;">
             <!-- Content Header (Page header) -->
-            @include('partials.content-header')
+            
             <!-- /.content-header -->
 
             <!-- Main content -->
@@ -103,6 +103,7 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{{ asset('admin/dist/js/pages/dashboard.js') }}"></script>
     
+    @stack('menu-scripts')
     @yield('scripts')
 </body>
 
