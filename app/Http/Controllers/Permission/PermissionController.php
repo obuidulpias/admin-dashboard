@@ -15,7 +15,36 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        $permissions = Permission::orderBy('created_at', 'desc')->paginate(15);
+        $query = Permission::query();
+
+        // Filter by Permission ID
+        if (request()->has('permission_id') && request('permission_id') != '') {
+            $query->where('id', request('permission_id'));
+        }
+
+        // Filter by Permission Name
+        if (request()->has('name') && request('name') != '') {
+            $query->where('name', 'like', '%' . request('name') . '%');
+        }
+
+        // Filter by Guard Name
+        if (request()->has('guard_name') && request('guard_name') != '') {
+            $query->where('guard_name', request('guard_name'));
+        }
+
+        // Filter by Created Date
+        if (request()->has('created_date') && request('created_date') != '') {
+            $query->whereDate('created_at', request('created_date'));
+        }
+
+        // Order By
+        $orderBy = request('order_by', 'created_at');
+        $query->orderBy($orderBy, 'desc');
+
+        // Pagination
+        $perPage = request('per_page', 15);
+        $permissions = $query->paginate($perPage)->appends(request()->except('page'));
+
         return view('permission.index', compact('permissions'));
     }
 
