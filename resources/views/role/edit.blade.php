@@ -35,14 +35,22 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Permissions</label>
-                                <div class="row">
+                                <div class="d-flex align-items-center mb-3">
+                                    <label class="mb-0 mr-2" style="white-space:nowrap;">Permissions</label>
+                                    <input
+                                        type="text"
+                                        class="form-control ml-auto"
+                                        id="permission-search"
+                                        style="max-width: 250px;"
+                                        placeholder="Search permissions...">
+                                </div>
+                                <div class="row" id="permissions-list">
                                     @forelse($permissions as $permission)
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 permission-item">
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" 
-                                                    id="permission{{ $permission->id }}" 
-                                                    name="permissions[]" 
+                                                <input type="checkbox" class="custom-control-input"
+                                                    id="permission{{ $permission->id }}"
+                                                    name="permissions[]"
                                                     value="{{ $permission->id }}"
                                                     {{ in_array($permission->id, old('permissions', $rolePermissions)) ? 'checked' : '' }}>
                                                 <label class="custom-control-label" for="permission{{ $permission->id }}">
@@ -73,5 +81,31 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchInput = document.getElementById('permission-search');
+        var permissionsList = document.getElementById('permissions-list');
+        if (searchInput && permissionsList) {
+            searchInput.addEventListener('input', function() {
+                var filter = searchInput.value.toLowerCase();
+                var items = permissionsList.querySelectorAll('.permission-item');
+                items.forEach(function(item) {
+                    var label = item.querySelector('label');
+                    if (label) {
+                        var text = label.innerText.toLowerCase();
+                        if (text.indexOf(filter) > -1) {
+                            item.style.display = '';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        }
+    });
+</script>
 @endsection
 
