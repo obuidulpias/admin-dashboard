@@ -45,9 +45,9 @@
         @include('partials.menu')
 
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
+        <div class="content-wrapper" style="margin-top: 12px;">
             <!-- Content Header (Page header) -->
-            @include('partials.content-header')
+            
             <!-- /.content-header -->
 
             <!-- Main content -->
