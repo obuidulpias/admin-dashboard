@@ -61,6 +61,30 @@
                                         id="password_confirmation" placeholder="Confirm new password">
                                 </div>
 
+                                <div class="form-group">
+                                    <label>Assign Roles</label>
+                                    <div class="row">
+                                        @forelse($roles as $role)
+                                            <div class="col-md-6">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" 
+                                                        id="role{{ $role->id }}" 
+                                                        name="roles[]" 
+                                                        value="{{ $role->id }}"
+                                                        {{ in_array($role->id, old('roles', $userRoles)) ? 'checked' : '' }}>
+                                                    <label class="custom-control-label" for="role{{ $role->id }}">
+                                                        {{ $role->name }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-muted">No roles available.</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
+
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle"></i> User created on
                                     {{ $user->created_at->format('M d, Y \a\t h:i A') }}

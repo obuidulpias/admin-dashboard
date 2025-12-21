@@ -8,17 +8,6 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2"
-                    alt="User Image">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
-            </div>
-        </div>
-
         <!-- SidebarSearch Form -->
         <div class="form-inline">
             <div class="input-group" data-widget="sidebar-search">
@@ -34,19 +23,24 @@
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+            <ul class="nav nav-pills nav-sidebar flex-column"
+                data-widget="treeview"
+                role="menu"
                 data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-                <li class="nav-item menu-open">
-                    <!-- You can define your route in web.php and use its name here -->
-                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
-                        <i class="nav-icon fas"></i>
+
+                <li class="nav-item">
+                    <a href="{{ route('home') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
+                            <i class="right fas"></i>
                         </p>
                     </a>
                 </li>
+            </ul>
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                data-accordion="false">
+                @can('show-user-list')
                 <li class="nav-item">
                     <a href="{{ route('users.index') }}"
                         class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
@@ -56,6 +50,33 @@
                         </p>
                     </a>
                 </li>
+                @endcan
+                <!-- Access Control Section -->
+                @can('user-role-permission')
+                <li class="nav-item {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-shield"></i>
+                        <p>
+                            Access Control
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Roles</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('permissions.index') }}" class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Permissions</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @endcan
                 <li class="nav-item">
                     <a href="pages/widgets.html" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
@@ -665,10 +686,7 @@
     <!-- /.sidebar -->
 </aside>
 
-@push('scripts')
     <script>
-        // Optional: If you want to have a pure JS solution for more dynamic handling,
-        // or for static HTML menus with no route/data bindings,
         // this script will add 'active' and 'menu-open' classes on click
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.nav-item > .nav-link').forEach(function(link) {
@@ -698,4 +716,3 @@
             });
         });
     </script>
-@endpush
