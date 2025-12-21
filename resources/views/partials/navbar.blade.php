@@ -6,36 +6,26 @@
                 <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
             </a>
         </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="{{ route('home') }}" class="nav-link navbar-link-custom">
-                <i class="fas fa-home mr-1"></i> Dashboard
-            </a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link navbar-link-custom">
-                <i class="fas fa-envelope mr-1"></i> Contact
-            </a>
-        </li>
     </ul>
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         
         <!-- Quick Search -->
-        <li class="nav-item">
+        <li class="nav-item" style="position: relative;">
             <a class="nav-link navbar-icon-custom" data-widget="navbar-search" href="#" role="button" title="Search">
                 <i class="fas fa-search"></i>
             </a>
-            <div class="navbar-search-block" style="background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <div class="navbar-search-block" style="background: #fff; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: absolute; top: 100%; right: 0; margin-top: 5px; min-width: 300px; padding: 15px; z-index: 1050; display: none;">
                 <form class="form-inline">
                     <div class="input-group input-group-sm">
                         <input class="form-control form-control-navbar" type="search" placeholder="Search anything..." 
-                            aria-label="Search" style="border-radius: 20px 0 0 20px; border: 2px solid #667eea;">
+                            aria-label="Search" style="border-radius: 20px 0 0 20px; border: 2px solid #667eea; background: #fff; color: #2d3748;">
                         <div class="input-group-append">
-                            <button class="btn btn-navbar" type="submit" style="background: #667eea; color: #fff; border-radius: 0;">
+                            <button class="btn btn-navbar" type="submit" style="background: #667eea; color: #fff; border-radius: 0; border: 2px solid #667eea; border-left: none;">
                                 <i class="fas fa-search"></i>
                             </button>
-                            <button class="btn btn-navbar" type="button" data-widget="navbar-search" style="border-radius: 0 20px 20px 0;">
+                            <button class="btn btn-navbar" type="button" data-widget="navbar-search" style="background: #f56565; color: #fff; border-radius: 0 20px 20px 0; border: 2px solid #f56565;">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -163,8 +153,6 @@
         <li class="nav-item dropdown">
             <a class="nav-link navbar-icon-custom" data-toggle="dropdown" href="#" style="padding: 5px 10px;">
                 <div class="d-flex align-items-center">
-                    <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle" 
-                        style="width: 35px; height: 35px; border: 2px solid #fff; margin-right: 8px;" alt="User Image">
                     <span class="d-none d-md-inline" style="color: #fff; font-weight: 500;">
                         {{ Auth::user()->name ?? 'Admin' }}
                     </span>
@@ -236,6 +224,9 @@
         transition: all 0.3s ease;
         position: relative;
         margin: 0 3px;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
     }
 
     .navbar-icon-custom:hover {
@@ -245,7 +236,18 @@
     }
 
     .navbar-icon-custom i {
-        font-size: 1.1rem;
+        font-size: 1.2rem !important;
+        display: inline-block !important;
+        color: #fff !important;
+        line-height: 1;
+    }
+    
+    /* Ensure FontAwesome icons are visible */
+    .navbar-icon-custom .fa,
+    .navbar-icon-custom .far,
+    .navbar-icon-custom .fas {
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 
     /* Pushmenu Icon Hover */
@@ -308,18 +310,64 @@
 
     /* Navbar Badge Custom */
     .navbar-badge {
-        font-size: 0.6rem;
-        font-weight: 700;
-        padding: 2px 5px;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        border: 2px solid #667eea;
+        font-size: 0.6rem !important;
+        font-weight: 700 !important;
+        padding: 2px 5px !important;
+        position: absolute !important;
+        top: 3px !important;
+        right: 3px !important;
+        border: 2px solid rgba(102, 126, 234, 0.3) !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 10 !important;
+    }
+    
+    /* Fix badge colors to be more visible */
+    .badge-danger {
+        background-color: #f56565 !important;
+        color: #fff !important;
+    }
+    
+    .badge-warning {
+        background-color: #ecc94b !important;
+        color: #2d3748 !important;
     }
 
     /* Search Block Enhancement */
     .navbar-search-block {
-        animation: searchFadeIn 0.3s ease;
+        position: absolute !important;
+        top: 100% !important;
+        right: 0 !important;
+        margin-top: 5px !important;
+        min-width: 300px !important;
+        padding: 15px !important;
+        z-index: 1050 !important;
+        display: none !important;
+    }
+    
+    /* Search icon active state */
+    [data-widget="navbar-search"].active {
+        background: rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    /* Search input styling */
+    .navbar-search-block .form-control-navbar {
+        background: #fff !important;
+        color: #2d3748 !important;
+    }
+    
+    .navbar-search-block .form-control-navbar:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.3) !important;
+        outline: none !important;
+    }
+    
+    /* Make search parent position relative */
+    .nav-item:has([data-widget="navbar-search"]) {
+        position: relative !important;
     }
 
     @keyframes searchFadeIn {
@@ -373,6 +421,34 @@
         background: #764ba2;
     }
 
+    /* Force icon visibility - override any conflicting styles */
+    .navbar-nav .nav-item .nav-link i.fa-comments,
+    .navbar-nav .nav-item .nav-link i.fa-bell,
+    .navbar-nav .nav-item .nav-link i.fa-search,
+    .navbar-nav .nav-item .nav-link i.fa-expand-arrows-alt,
+    .navbar-nav .nav-item .nav-link i.far,
+    .navbar-nav .nav-item .nav-link i.fas {
+        display: inline-block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        font-size: 1.2rem !important;
+        color: #fff !important;
+        width: auto !important;
+        height: auto !important;
+    }
+    
+    /* Ensure nav items are visible */
+    .navbar-nav > .nav-item {
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    /* Make sure dropdown items are displayed */
+    .navbar-nav > .nav-item.dropdown {
+        display: flex !important;
+        position: relative !important;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .navbar-icon-custom {
@@ -388,9 +464,101 @@
 @push('menu-scripts')
 <script>
     $(document).ready(function() {
+        // Ensure icons are visible
+        setTimeout(function() {
+            $('.navbar-icon-custom i').each(function() {
+                if ($(this).is(':hidden') || $(this).css('opacity') == '0') {
+                    $(this).css({
+                        'display': 'inline-block',
+                        'opacity': '1',
+                        'visibility': 'visible',
+                        'color': '#fff'
+                    });
+                }
+            });
+        }, 100);
+        
+        // Custom Navbar Search Toggle (override AdminLTE default)
+        const $searchToggle = $('[data-widget="navbar-search"]');
+        const $searchBlock = $('.navbar-search-block');
+        
+        // Initially hide the search block
+        $searchBlock.hide();
+        
+        // Remove AdminLTE's default handler and add custom one
+        $searchToggle.off('click.lte.navbar-search');
+        
+        $searchToggle.on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isVisible = $searchBlock.is(':visible');
+            
+            if (isVisible) {
+                // Close search
+                $searchBlock.slideUp(300);
+                $(this).removeClass('active');
+            } else {
+                // Open search
+                $searchBlock.slideDown(300, function() {
+                    // Focus on the search input after animation
+                    $searchBlock.find('input[type="search"]').focus();
+                });
+                $(this).addClass('active');
+            }
+        });
+        
+        // Close search when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.navbar-search-block, [data-widget="navbar-search"]').length) {
+                if ($searchBlock.is(':visible')) {
+                    $searchBlock.slideUp(300);
+                    $searchToggle.removeClass('active');
+                }
+            }
+        });
+        
+        // Prevent search block from closing when clicking inside it
+        $searchBlock.on('click', function(e) {
+            e.stopPropagation();
+        });
+        
         // Add smooth transitions to dropdowns
         $('.dropdown-toggle').on('click', function() {
             $(this).next('.dropdown-menu').addClass('modern-dropdown');
+        });
+        
+        // Initialize Bootstrap dropdowns explicitly
+        $('.nav-item.dropdown').each(function() {
+            const $dropdown = $(this);
+            const $toggle = $dropdown.find('[data-toggle="dropdown"]');
+            
+            $toggle.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Close search if open
+                if ($searchBlock.is(':visible')) {
+                    $searchBlock.slideUp(300);
+                    $searchToggle.removeClass('active');
+                }
+                
+                // Close other dropdowns
+                $('.nav-item.dropdown').not($dropdown).removeClass('show')
+                    .find('.dropdown-menu').removeClass('show');
+                
+                // Toggle current dropdown
+                $dropdown.toggleClass('show');
+                $dropdown.find('.dropdown-menu').toggleClass('show');
+            });
+        });
+        
+        // Close dropdowns when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.nav-item.dropdown').length) {
+                $('.nav-item.dropdown').removeClass('show')
+                    .find('.dropdown-menu').removeClass('show');
+            }
         });
 
         // Update fullscreen icon
@@ -407,7 +575,6 @@
         $('.dropdown-item-hover').on('click', function(e) {
             if ($(this).closest('.dropdown-menu').find('.badge').length) {
                 // Could add AJAX call here to mark as read
-                console.log('Notification clicked');
             }
         });
     });
