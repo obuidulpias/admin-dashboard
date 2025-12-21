@@ -6,16 +6,6 @@
                 <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
             </a>
         </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="{{ route('home') }}" class="nav-link navbar-link-custom">
-                <i class="fas fa-home mr-1"></i> Dashboard
-            </a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link navbar-link-custom">
-                <i class="fas fa-envelope mr-1"></i> Contact
-            </a>
-        </li>
     </ul>
 
     <!-- Right navbar links -->
@@ -163,8 +153,6 @@
         <li class="nav-item dropdown">
             <a class="nav-link navbar-icon-custom" data-toggle="dropdown" href="#" style="padding: 5px 10px;">
                 <div class="d-flex align-items-center">
-                    <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle" 
-                        style="width: 35px; height: 35px; border: 2px solid #fff; margin-right: 8px;" alt="User Image">
                     <span class="d-none d-md-inline" style="color: #fff; font-weight: 500;">
                         {{ Auth::user()->name ?? 'Admin' }}
                     </span>
