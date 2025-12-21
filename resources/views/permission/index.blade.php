@@ -8,16 +8,13 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">All Users</h3>
-                        @can('user-create')
+                        <h3 class="card-title">All Permissions</h3>
                         <div class="card-tools">
-                                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Add New User
-                                </a>
-                            </div>
-                        @endcan
+                            <a href="{{ route('permissions.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Add New Permission
+                            </a>
+                        </div>
                     </div>
-                    
                     <div class="card-body">
                         @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -47,49 +44,29 @@
                             </div>
                             <div id="filterOptions" class="collapse">
                                 <div class="card-body">
-                                    <form method="GET" action="{{ route('users.index') }}" id="filterForm">
+                                    <form method="GET" action="{{ route('permissions.index') }}" id="filterForm">
                                         <div class="row">
-                                            <!-- User Id -->
+                                            <!-- Permission Id -->
                                             <div class="col-md-3 mb-3">
-                                                <label for="user_id">User Id</label>
-                                                <input type="text" class="form-control" id="user_id" name="user_id" 
-                                                       value="{{ request('user_id') }}" placeholder="Enter User ID">
+                                                <label for="permission_id">Permission ID</label>
+                                                <input type="text" class="form-control" id="permission_id" name="permission_id" 
+                                                       value="{{ request('permission_id') }}" placeholder="Enter Permission ID">
                                             </div>
 
-                                            <!-- User Name -->
+                                            <!-- Permission Name -->
                                             <div class="col-md-3 mb-3">
-                                                <label for="name">User Name</label>
+                                                <label for="name">Permission Name</label>
                                                 <input type="text" class="form-control" id="name" name="name" 
-                                                       value="{{ request('name') }}" placeholder="Enter Name">
+                                                       value="{{ request('name') }}" placeholder="Enter Permission Name">
                                             </div>
 
-                                            <!-- User Email -->
+                                            <!-- Guard Name -->
                                             <div class="col-md-3 mb-3">
-                                                <label for="email">User Email</label>
-                                                <input type="text" class="form-control" id="email" name="email" 
-                                                       value="{{ request('email') }}" placeholder="Enter Email">
-                                            </div>
-
-                                            <!-- Email Verified -->
-                                            <div class="col-md-3 mb-3">
-                                                <label for="email_verified">Email Verified</label>
-                                                <select class="form-control" id="email_verified" name="email_verified">
-                                                    <option value="">Select Status</option>
-                                                    <option value="1" {{ request('email_verified') == '1' ? 'selected' : '' }}>Verified</option>
-                                                    <option value="0" {{ request('email_verified') == '0' ? 'selected' : '' }}>Not Verified</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Role -->
-                                            <div class="col-md-3 mb-3">
-                                                <label for="role">Role</label>
-                                                <select class="form-control" id="role" name="role">
-                                                    <option value="">Select Role</option>
-                                                    @foreach($roles as $role)
-                                                        <option value="{{ $role->id }}" {{ request('role') == $role->id ? 'selected' : '' }}>
-                                                            {{ $role->name }}
-                                                        </option>
-                                                    @endforeach
+                                                <label for="guard_name">Guard Name</label>
+                                                <select class="form-control" id="guard_name" name="guard_name">
+                                                    <option value="">Select Guard</option>
+                                                    <option value="web" {{ request('guard_name') == 'web' ? 'selected' : '' }}>Web</option>
+                                                    <option value="api" {{ request('guard_name') == 'api' ? 'selected' : '' }}>API</option>
                                                 </select>
                                             </div>
 
@@ -107,7 +84,7 @@
                                                     <option value="">Select Order By</option>
                                                     <option value="id" {{ request('order_by') == 'id' ? 'selected' : '' }}>ID</option>
                                                     <option value="name" {{ request('order_by') == 'name' ? 'selected' : '' }}>Name</option>
-                                                    <option value="email" {{ request('order_by') == 'email' ? 'selected' : '' }}>Email</option>
+                                                    <option value="guard_name" {{ request('order_by') == 'guard_name' ? 'selected' : '' }}>Guard Name</option>
                                                     <option value="created_at" {{ request('order_by') == 'created_at' || !request('order_by') ? 'selected' : '' }}>Created Date</option>
                                                 </select>
                                             </div>
@@ -117,7 +94,8 @@
                                                 <label for="per_page">Paginate</label>
                                                 <select class="form-control" id="per_page" name="per_page">
                                                     <option value="">Select Pagination</option>
-                                                    <option value="10" {{ request('per_page') == '10' || !request('per_page') ? 'selected' : '' }}>10</option>
+                                                    <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
+                                                    <option value="15" {{ request('per_page') == '15' || !request('per_page') ? 'selected' : '' }}>15</option>
                                                     <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
                                                     <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
                                                     <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
@@ -131,10 +109,7 @@
                                                 <button type="submit" class="btn btn-primary">
                                                     <i class="fas fa-filter"></i> Filter
                                                 </button>
-                                                <button type="submit" name="download" value="1" class="btn btn-success ml-2">
-                                                    <i class="fas fa-download"></i> Download
-                                                </button>
-                                                <a href="{{ route('users.index') }}" class="btn btn-danger ml-2">
+                                                <a href="{{ route('permissions.index') }}" class="btn btn-danger ml-2">
                                                     <i class="fas fa-times"></i> Clear
                                                 </a>
                                             </div>
@@ -143,72 +118,47 @@
                                 </div>
                             </div>
                         </div>
-
+                        
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th style="width: 10px">#</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Roles</th>
+                                    <th>Permission Name</th>
+                                    <th>Guard Name</th>
                                     <th>Created At</th>
-                                    <th style="width: 200px">Actions</th>
+                                    <th style="width: 150px">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($users as $user)
+                                @forelse ($permissions as $permission)
                                     <tr>
-                                        <td>{{ $user->id }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $permission->id }}</td>
+                                        <td>{{ $permission->name }}</td>
+                                        <td><span class="badge badge-secondary">{{ $permission->guard_name }}</span></td>
+                                        <td>{{ $permission->created_at->format('M d, Y') }}</td>
                                         <td>
-                                            @if($user->roles->count() > 0)
-                                                @foreach($user->roles as $role)
-                                                    <span class="badge badge-info">{{ $role->name }}</span>
-                                                @endforeach
-                                            @else
-                                                <span class="text-muted">No roles</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $user->created_at->format('M d, Y') }}</td>
-                                        <td>
-                                            @can('user-edit')
-                                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-info btn-sm" title="Edit User">
+                                            <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-info btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            @endcan
-                                            @can('user-assign-role')
-                                            <a href="{{ route('users.assign-role', $user->id) }}" class="btn btn-warning btn-sm" title="Assign Roles">
-                                                <i class="fas fa-user-tag"></i>
-                                            </a>
-                                            @endcan
-                                            @can('user-delete')
-                                            @if ($user->id !== auth()->id())
-                                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete User">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endcan
-                                            @else
-                                                <button class="btn btn-secondary btn-sm" disabled title="Cannot delete yourself">
+                                            <form action="{{ route('permissions.destroy', $permission->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this permission?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                            @endif
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">No users found.</td>
+                                        <td colspan="5" class="text-center">No permissions found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                     <div class="card-footer clearfix">
-                        {{ $users->links() }}
+                        {{ $permissions->links() }}
                     </div>
                 </div>
             </div>

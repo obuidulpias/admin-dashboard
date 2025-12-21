@@ -59,6 +59,30 @@
                                     <input type="password" name="password_confirmation" class="form-control"
                                         id="password_confirmation" placeholder="Confirm password" required>
                                 </div>
+
+                                <div class="form-group">
+                                    <label>Assign Roles</label>
+                                    <div class="row">
+                                        @forelse($roles as $role)
+                                            <div class="col-md-6">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" 
+                                                        id="role{{ $role->id }}" 
+                                                        name="roles[]" 
+                                                        value="{{ $role->id }}"
+                                                        {{ in_array($role->id, old('roles', [])) ? 'checked' : '' }}>
+                                                    <label class="custom-control-label" for="role{{ $role->id }}">
+                                                        {{ $role->name }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <p class="text-muted">No roles available.</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="card-footer">
