@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Permission;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Permission\StorePermissionRequest;
 use App\Http\Requests\Permission\UpdatePermissionRequest;
+use App\Services\AuditLogService;
 use Spatie\Permission\Models\Permission;
 use Exception;
 
 class PermissionController extends Controller
 {
+    protected $auditLogService;
+
+    public function __construct(AuditLogService $auditLogService)
+    {
+        $this->auditLogService = $auditLogService;
+    }
+
     /**
      * Display a listing of permissions.
      */
@@ -62,7 +70,10 @@ class PermissionController extends Controller
     public function store(StorePermissionRequest $request)
     {
         try {
-            Permission::create(['name' => $request->name]);
+            $permission = Permission::create(['name' => $request->name]);
+            
+            // Log the creation
+            $this->auditLogService->log('permission created', $permission, null, $permission->getAttributes());
             
             return redirect()->route('permissions.index')
                 ->with('success', 'Permission created successfully!');
@@ -98,7 +109,15 @@ class PermissionController extends Controller
     {
         try {
             $permission = Permission::findOrFail($id);
+            
+            // Get old values before update
+            $oldValues = $permission->getAttributes();
+            
+            // Update the permission
             $permission->update(['name' => $request->name]);
+            
+            // Log the update
+            $this->auditLogService->log('permission updated', $permission, $oldValues, $permission->getChanges());
             
             return redirect()->route('permissions.index')
                 ->with('success', 'Permission updated successfully!');
@@ -122,6 +141,9 @@ class PermissionController extends Controller
                 return redirect()->route('permissions.index')
                     ->with('error', 'Cannot delete permission assigned to roles!');
             }
+            
+            // Log the deletion before deleting
+            $this->auditLogService->log('permission deleted', $permission, $permission->getAttributes(), null);
             
             $permission->delete();
             

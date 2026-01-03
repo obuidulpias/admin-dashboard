@@ -84,6 +84,20 @@
                     <i class="fas fa-cog mr-2"></i> SYSTEM
                 </li>
 
+                @can('audit-log')
+                <!-- Audit Log -->
+                <li class="nav-item">
+                    <a href="{{ route('audit-logs.index') }}" 
+                        class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}"
+                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                        <i class="nav-icon fas fa-history" style="color: #9f7aea;"></i>
+                        <p style="font-weight: 500;">
+                            Audit Log
+                        </p>
+                    </a>
+                </li>
+                @endcan
+
                 <!-- Settings -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" 
