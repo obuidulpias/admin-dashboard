@@ -6,115 +6,44 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
+use App\Services\AuditLogService;
+use App\Services\UserService;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    protected $auditLogService;
+    protected $userService;
+
+    public function __construct(AuditLogService $auditLogService, UserService $userService)
+    {
+        $this->auditLogService = $auditLogService;
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of the users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $query = User::with('roles');
-
-        // Apply filters
-        if (request()->filled('user_id')) {
-            $query->where('id', request('user_id'));
-        }
-
-        if (request()->filled('name')) {
-            $query->where('name', 'like', '%' . request('name') . '%');
-        }
-
-        if (request()->filled('email')) {
-            $query->where('email', 'like', '%' . request('email') . '%');
-        }
-
-        if (request()->filled('email_verified')) {
-            if (request('email_verified') == '1') {
-                $query->whereNotNull('email_verified_at');
-            } else {
-                $query->whereNull('email_verified_at');
-            }
-        }
-
-        if (request()->filled('role')) {
-            $query->whereHas('roles', function($q) {
-                $q->where('id', request('role'));
-            });
-        }
-
-        if (request()->filled('created_date')) {
-            $query->whereDate('created_at', request('created_date'));
-        }
-
-        // Order By
-        $orderBy = request('order_by', 'created_at');
-        $orderDirection = request('order_direction', 'desc');
-        $query->orderBy($orderBy, $orderDirection);
-
         // Check if download is requested
-        if (request()->has('download')) {
-            return $this->downloadUsers($query);
+        if ($request->has('download')) {
+            $query = $this->userService->getFilteredUsersQuery($request);
+            return $this->userService->downloadUsers($query);
         }
 
-        // Pagination
-        $perPage = request('per_page', 10);
-        $users = $query->paginate($perPage)->appends(request()->except('page'));
+        // Get paginated users
+        $perPage = $request->get('per_page', 10);
+        $users = $this->userService->getFilteredUsers($request, $perPage);
 
         // Get all roles for filter dropdown
         $roles = Role::all();
 
         return view('admin.user.index', compact('users', 'roles'));
-    }
-
-    /**
-     * Download filtered users as CSV.
-     */
-    private function downloadUsers($query)
-    {
-        $users = $query->get();
-        
-        $filename = 'users_' . date('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function() use ($users) {
-            $file = fopen('php://output', 'w');
-            
-            // Add CSV headers
-            fputcsv($file, [
-                'ID', 
-                'Name', 
-                'Email', 
-                'Email Verified', 
-                'Roles', 
-                'Created At'
-            ]);
-            
-            // Add data rows
-            foreach ($users as $user) {
-                $roles = $user->roles->pluck('name')->implode(', ');
-                fputcsv($file, [
-                    $user->id,
-                    $user->name,
-                    $user->email,
-                    $user->email_verified_at ? 'Yes' : 'No',
-                    $roles ?: 'No roles',
-                    $user->created_at->format('Y-m-d H:i:s'),
-                ]);
-            }
-            
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
     }
 
     /**
@@ -144,6 +73,9 @@ class UserController extends Controller
                 $user->syncRoles($roles);
             }
 
+            // Log the creation
+            $this->auditLogService->log('user created', $user, null, $user->getAttributes());
+
             return redirect()->route('users.index')->with('success', 'User created successfully!');
         } catch (Exception $e) {
             return redirect()->route('users.create')
@@ -171,6 +103,10 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         try {
+            // Get old values before update
+            $oldValues = $user->getAttributes();
+            $oldRoleIds = $user->roles->pluck('id')->sort()->values()->toArray();
+
             $user->name = $request->name;
             $user->email = $request->email;
 
@@ -181,12 +117,25 @@ class UserController extends Controller
             $user->save();
 
             // Update roles if provided
+            $newRoleIds = [];
             if ($request->has('roles')) {
                 $roles = Role::whereIn('id', $request->roles)->get();
                 $user->syncRoles($roles);
+                $newRoleIds = $request->roles;
             } else {
                 $user->syncRoles([]);
             }
+            sort($newRoleIds);
+
+            // Prepare new values with role changes
+            $newValues = $user->getChanges();
+            if ($oldRoleIds !== $newRoleIds) {
+                $newValues['roles'] = $newRoleIds;
+                $oldValues['roles'] = $oldRoleIds;
+            }
+
+            // Log the update
+            $this->auditLogService->log('user updated', $user, $oldValues, $newValues);
 
             return redirect()->route('users.index')->with('success', 'User updated successfully!');
         } catch (Exception $e) {
@@ -207,6 +156,9 @@ class UserController extends Controller
         if ($user->id == Auth::id()) {
             return redirect()->route('users.index')->with('error', 'You cannot delete your own account!');
         }
+
+        // Log the deletion before deleting
+        $this->auditLogService->log('user deleted', $user, $user->getAttributes(), null);
 
         $user->delete();
 
@@ -233,8 +185,13 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
             
+            // Get old role IDs before update
+            $oldRoleIds = $user->roles->pluck('id')->sort()->values()->toArray();
+            
             // Get array of role ids or empty array if none
             $roleIds = request()->input('roles', []);
+            $newRoleIds = !empty($roleIds) ? $roleIds : [];
+            sort($newRoleIds);
 
             // Sync roles - if roleIds is empty, all roles will be removed
             if (!empty($roleIds)) {
@@ -242,6 +199,11 @@ class UserController extends Controller
                 $user->syncRoles($roles);
             } else {
                 $user->syncRoles([]);
+            }
+            
+            // Log role assignment change
+            if ($oldRoleIds !== $newRoleIds) {
+                $this->auditLogService->log('user roles updated', $user, ['roles' => $oldRoleIds], ['roles' => $newRoleIds]);
             }
             
             return redirect()->route('users.index')
