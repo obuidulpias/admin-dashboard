@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +12,12 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    protected $auditLogService;
+
+    public function __construct(AuditLogService $auditLogService)
+    {
+        $this->auditLogService = $auditLogService;
+    }
     /**
      * Show the login form
      */
@@ -57,6 +64,13 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
             
+            // Log successful login
+            $user = Auth::user();
+            $this->auditLogService->log('user logged in', $user, null, [
+                'email' => $user->email,
+                'remember' => $remember
+            ]);
+            
             return redirect()->intended('/')->with('success', 'Welcome back!');
         }
 
@@ -101,6 +115,14 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        // Get user before logout for audit log
+        $user = Auth::user();
+        
+        // Log logout before session is invalidated
+        if ($user) {
+            $this->auditLogService->log('user logged out', $user);
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();
