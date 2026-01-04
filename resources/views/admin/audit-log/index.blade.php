@@ -186,7 +186,7 @@
                         </div>
                     </div>
                     <div class="card-footer clearfix">
-                        {{ $auditLogs->links() }}
+                        {{ $auditLogs->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
