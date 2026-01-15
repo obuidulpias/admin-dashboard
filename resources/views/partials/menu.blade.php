@@ -375,11 +375,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="pages/examples/profile.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Profile</p>
+                            <a href="{{ route('profile.edit') }}"
+                            class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>My Profile</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="pages/examples/e-commerce.html" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
