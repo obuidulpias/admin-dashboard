@@ -79,9 +79,9 @@
                         <i class="fab fa-facebook mr-2"></i>
                         Sign up using Facebook
                     </a>
-                    <a href="#" class="btn btn-block btn-danger">
+                    <a href="{{ route('google.login') }}" class="btn btn-block btn-danger">
                         <i class="fab fa-google-plus mr-2"></i>
-                        Sign up using Google+
+                        Sign up using Google
                     </a>
                 </div>
 
