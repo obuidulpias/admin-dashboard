@@ -4,6 +4,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\AuditLog\AuditLogController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +37,8 @@ Route::middleware('auth')->group(function () {
     
     // Permission Management Routes
     Route::resource('permissions', PermissionController::class);
+    
+    // Audit Log Routes
+    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('audit-logs/{id}', [AuditLogController::class, 'show'])->name('audit-logs.show');
 });

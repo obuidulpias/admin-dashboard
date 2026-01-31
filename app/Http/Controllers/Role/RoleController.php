@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
+use App\Services\AuditLogService;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
@@ -12,6 +13,12 @@ use Exception;
 
 class RoleController extends Controller
 {
+    protected $auditLogService;
+
+    public function __construct(AuditLogService $auditLogService)
+    {
+        $this->auditLogService = $auditLogService;
+    }
     /**
      * Display a listing of roles.
      */
@@ -41,6 +48,9 @@ class RoleController extends Controller
             if ($request->has('permissions')) {
                 $role->syncPermissions($request->permissions);
             }
+            
+            // Log the creation
+            $this->auditLogService->log('role created', $role, null, $role->getAttributes());
             
             return redirect()->route('roles.index')
                 ->with('success', 'Role created successfully!');
@@ -79,20 +89,36 @@ class RoleController extends Controller
     {
         try {
             $role = Role::findOrFail($id);
+            
+            // Get old values before update
+            $oldValues = $role->getAttributes();
+            $oldPermissionIds = $role->permissions->pluck('id')->sort()->values()->toArray();
+            
+            // Update the role name
             $role->update(['name' => $request->name]);
             
             // Get array of permission ids or empty array if none
             $permissionIds = $request->input('permissions', []);
+            $newPermissionIds = !empty($permissionIds) ? $permissionIds : [];
+            sort($newPermissionIds);
 
-            // Your error is likely because Spatie's `syncPermissions` expects either permission names or Permission model instances.
-            // If you pass IDs, you must first fetch the Permission models by those IDs.
-            // The following will fetch the Permission models for the given IDs:
+            // Sync permissions
             if (!empty($permissionIds)) {
                 $permissions = \Spatie\Permission\Models\Permission::whereIn('id', $permissionIds)->get();
                 $role->syncPermissions($permissions);
             } else {
                 $role->syncPermissions([]);
             }
+            
+            // Prepare new values with permission changes
+            $newValues = $role->getChanges();
+            if ($oldPermissionIds !== $newPermissionIds) {
+                $newValues['permissions'] = $newPermissionIds;
+                $oldValues['permissions'] = $oldPermissionIds;
+            }
+            
+            // Log the update
+            $this->auditLogService->log('role updated', $role, $oldValues, $newValues);
             
             return redirect()->route('roles.index')
                 ->with('success', 'Role updated successfully!');
@@ -116,6 +142,9 @@ class RoleController extends Controller
                 return redirect()->route('roles.index')
                     ->with('error', 'Cannot delete role with assigned users!');
             }
+            
+            // Log the deletion before deleting
+            $this->auditLogService->log('role deleted', $role, $role->getAttributes(), null);
             
             $role->delete();
             

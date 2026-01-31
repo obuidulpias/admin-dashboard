@@ -77,6 +77,18 @@
                     </ul>
                 </li>
                 @endcan
+                @can('audit-log')
+                <!-- Audit Log -->
+                <li class="nav-item">
+                    <a href="{{ route('audit-logs.index') }}" 
+                        class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>
+                            Audit Log
+                        </p>
+                    </a>
+                </li>
+                @endcan
                 <li class="nav-item">
                     <a href="pages/widgets.html" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
