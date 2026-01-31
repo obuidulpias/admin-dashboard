@@ -26,6 +26,17 @@
                 role="menu" 
                 data-accordion="false">
 
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" 
+                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                        <i class="nav-icon fas fa-tachometer-alt" style="color: #667eea;"></i>
+                        <p style="font-weight: 500;">
+                            Dashboard
+                        </p>
+                    </a>
+                </li>
+
                 <!-- MAIN MENU Section Header -->
                 <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 8px 15px 5px 15px;">
                     <i class="fas fa-grip-horizontal mr-2"></i> MAIN MENU
