@@ -146,16 +146,18 @@
                     </a>
                 </li>
 
-                <!-- Activity Log -->
+                @can('audit-log')
+                <!-- Audit Log -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link" 
+                    <a href="{{ route('audit-logs.index') }}" class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" 
                         style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-history" style="color: #9f7aea;"></i>
                         <p style="font-weight: 500;">
-                            Activity Log
+                            Audit Log
                         </p>
                     </a>
                 </li>
+                @endcan
 
                 <!-- CONTENT MANAGEMENT Section Header -->
                 <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
