@@ -8,6 +8,21 @@
 
     <!-- Sidebar -->
     <div class="sidebar" style="background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);">
+        
+        <!-- User Panel -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex" style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+            <div class="image">
+                <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image" style="border: 2px solid #667eea;">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block" style="color: #fff; font-weight: 500;">
+                    {{ Auth::user()->name ?? 'Admin User' }}
+                </a>
+                <small style="color: #a0aec0;">
+                    <i class="fas fa-circle text-success" style="font-size: 0.6rem;"></i> Online
+                </small>
+            </div>
+        </div>
 
         <!-- SidebarSearch Form -->
         <div class="sidebar-search-container px-3" style="margin-top: 10px; margin-bottom: 2px;">
@@ -25,6 +40,17 @@
                 data-widget="treeview" 
                 role="menu" 
                 data-accordion="false">
+
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" 
+                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                        <i class="nav-icon fas fa-tachometer-alt" style="color: #667eea;"></i>
+                        <p style="font-weight: 500;">
+                            Dashboard
+                        </p>
+                    </a>
+                </li>
 
                 <!-- MAIN MENU Section Header -->
                 <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
