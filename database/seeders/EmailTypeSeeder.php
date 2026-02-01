@@ -13,12 +13,21 @@ class EmailTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $constants = EmailConstants::all();
+        $constants = [
+            EmailConstants::WELCOME_EMAIL,
+            EmailConstants::OTP_EMAIL_VERIFICATION,
+            EmailConstants::MLL_TRIGGER_EMAIL,
+            EmailConstants::PAYOUT_DISBURSED_EMAIL,
+            EmailConstants::NEWS_TRADE,
+        ];
 
         foreach ($constants as $constant) {
+            // Convert constant value to readable name (e.g., 'welcome-email' => 'Welcome Email')
+            $name = ucwords(str_replace('-', ' ', $constant));
+            
             EmailType::firstOrCreate(
                 ['constant' => $constant],
-                ['name' => EmailConstants::getName($constant)]
+                ['name' => $name]
             );
         }
 
