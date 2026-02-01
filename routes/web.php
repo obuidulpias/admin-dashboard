@@ -48,4 +48,11 @@ Route::middleware('auth')->group(function () {
     Route::get('log-viewer/{file}/show/{line}', [LogViewerController::class, 'show'])->name('log-viewer.show');
     Route::get('log-viewer/{file}/download', [LogViewerController::class, 'download'])->name('log-viewer.download');
     Route::get('log-viewer/{file}/delete', [LogViewerController::class, 'delete'])->name('log-viewer.delete');
+    
+    // Email Management Routes
+    Route::resource('email-types', \App\Http\Controllers\EmailType\EmailTypeController::class);
+    Route::resource('email-templates', \App\Http\Controllers\EmailTemplate\EmailTemplateController::class);
+    Route::post('email-templates/{id}/test-send', [\App\Http\Controllers\EmailTemplate\EmailTemplateController::class, 'testSend'])->name('email-templates.test-send');
+    Route::get('email-logs', [\App\Http\Controllers\EmailLog\EmailLogController::class, 'index'])->name('email-logs.index');
+    Route::get('email-logs/{id}', [\App\Http\Controllers\EmailLog\EmailLogController::class, 'show'])->name('email-logs.show');
 });

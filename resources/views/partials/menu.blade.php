@@ -98,6 +98,37 @@
                 </li>
                 @endcan
 
+                <!-- Email Management -->
+                <li class="nav-item {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-envelope"></i>
+                        <p>
+                            Email Management
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('email-types.index') }}" class="nav-link {{ request()->routeIs('email-types.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Email Types</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('email-templates.index') }}" class="nav-link {{ request()->routeIs('email-templates.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Email Templates</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('email-logs.index') }}" class="nav-link {{ request()->routeIs('email-logs.*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Email Logs</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <!-- Log Viewer -->
                 <li class="nav-item">
                     <a href="{{ route('log-viewer.index') }}" 
