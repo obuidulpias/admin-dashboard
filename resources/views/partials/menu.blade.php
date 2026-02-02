@@ -9,23 +9,8 @@
     <!-- Sidebar -->
     <div class="sidebar" style="background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);">
         
-        <!-- User Panel -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex" style="border-bottom: 2px solid rgba(255,255,255,0.1);">
-            <div class="image">
-                <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image" style="border: 2px solid #667eea;">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block" style="color: #fff; font-weight: 500;">
-                    {{ Auth::user()->name ?? 'Admin User' }}
-                </a>
-                <small style="color: #a0aec0;">
-                    <i class="fas fa-circle text-success" style="font-size: 0.6rem;"></i> Online
-                </small>
-            </div>
-        </div>
-
         <!-- SidebarSearch Form -->
-        <div class="sidebar-search-container px-3" style="margin-top: 10px; margin-bottom: 2px;">
+        <div class="sidebar-search-container px-3" style="margin-top: 10px; margin-bottom: 5px;">
             <div class="input-group" data-widget="sidebar-search">
                 <input class="form-control form-control-sidebar" 
                        type="search" 
@@ -35,25 +20,14 @@
             </div>
         </div>
         <!-- Sidebar Menu -->
-        <nav class="mt-1">
+        <nav style="margin-top: 0;">
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" 
                 data-widget="treeview" 
                 role="menu" 
                 data-accordion="false">
 
-                <!-- Dashboard -->
-                <li class="nav-item">
-                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
-                        <i class="nav-icon fas fa-tachometer-alt" style="color: #667eea;"></i>
-                        <p style="font-weight: 500;">
-                            Dashboard
-                        </p>
-                    </a>
-                </li>
-
                 <!-- MAIN MENU Section Header -->
-                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
+                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 8px 15px 5px 15px;">
                     <i class="fas fa-grip-horizontal mr-2"></i> MAIN MENU
                 </li>
 
@@ -62,7 +36,7 @@
                 <li class="nav-item">
                     <a href="{{ route('users.index') }}" 
                         class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-users" style="color: #48bb78;"></i>
                         <p style="font-weight: 500;">
                             Users
@@ -75,7 +49,7 @@
                 <!-- Access Control Section -->
                 @can('user-role-permission')
                 <li class="nav-item {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'menu-open' : '' }}" 
-                    style="margin: 5px 0;">
+                    style="margin: 2px 0;">
                     <a href="#" class="nav-link {{ request()->routeIs('roles.*') || request()->routeIs('permissions.*') ? 'active' : '' }}" 
                         style="border-radius: 10px; margin: 0 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-user-shield" style="color: #f56565;"></i>
@@ -88,7 +62,7 @@
                         <li class="nav-item">
                             <a href="{{ route('roles.index') }}" 
                                 class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-dot-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Roles</p>
                             </a>
@@ -96,7 +70,7 @@
                         <li class="nav-item">
                             <a href="{{ route('permissions.index') }}" 
                                 class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-dot-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Permissions</p>
                             </a>
@@ -106,7 +80,7 @@
                 @endcan
 
                 <!-- SYSTEM Section Header -->
-                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
+                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 8px 15px 5px 15px;">
                     <i class="fas fa-cog mr-2"></i> SYSTEM
                 </li>
 
@@ -115,7 +89,7 @@
                 <li class="nav-item">
                     <a href="{{ route('audit-logs.index') }}" 
                         class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}"
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-history" style="color: #9f7aea;"></i>
                         <p style="font-weight: 500;">
                             Audit Log
@@ -139,7 +113,7 @@
                 <!-- Settings -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-cogs" style="color: #a0aec0;"></i>
                         <p style="font-weight: 500;">
                             Settings
@@ -150,7 +124,7 @@
                 <!-- Reports -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-chart-line" style="color: #4299e1;"></i>
                         <p style="font-weight: 500;">
                             Reports
@@ -158,21 +132,8 @@
                     </a>
                 </li>
 
-                @can('audit-log')
-                <!-- Audit Log -->
-                <li class="nav-item">
-                    <a href="{{ route('audit-logs.index') }}" class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
-                        <i class="nav-icon fas fa-history" style="color: #9f7aea;"></i>
-                        <p style="font-weight: 500;">
-                            Audit Log
-                        </p>
-                    </a>
-                </li>
-                @endcan
-
                 <!-- CONTENT MANAGEMENT Section Header -->
-                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
+                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 8px 15px 5px 15px;">
                     <i class="fas fa-layer-group mr-2"></i> CONTENT MANAGEMENT
                 </li>
 
@@ -190,7 +151,7 @@
                         <!-- Posts with Submenu -->
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>
                                     Posts
@@ -200,28 +161,28 @@
                             <ul class="nav nav-treeview" style="padding-left: 10px;">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>All Posts</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Add New</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Categories</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Tags</p>
                                     </a>
@@ -232,7 +193,7 @@
                         <!-- Pages with Submenu -->
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>
                                     Pages
@@ -242,14 +203,14 @@
                             <ul class="nav nav-treeview" style="padding-left: 10px;">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>All Pages</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Add New</p>
                                     </a>
@@ -260,7 +221,7 @@
                         <!-- Media -->
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Media Library</p>
                             </a>
@@ -282,7 +243,7 @@
                         <!-- Products with Deep Nesting -->
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>
                                     Products
@@ -292,21 +253,21 @@
                             <ul class="nav nav-treeview" style="padding-left: 10px;">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>All Products</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Add Product</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>
                                             Categories
@@ -316,21 +277,21 @@
                                     <ul class="nav nav-treeview" style="padding-left: 10px;">
                                         <li class="nav-item">
                                             <a href="#" class="nav-link" 
-                                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                                 <i class="fas fa-caret-right nav-icon" style="color: #4299e1; font-size: 0.6rem;"></i>
                                                 <p>Electronics</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="#" class="nav-link" 
-                                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                                 <i class="fas fa-caret-right nav-icon" style="color: #4299e1; font-size: 0.6rem;"></i>
                                                 <p>Clothing</p>
                                             </a>
                                         </li>
                                         <li class="nav-item">
                                             <a href="#" class="nav-link" 
-                                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                                 <i class="fas fa-caret-right nav-icon" style="color: #4299e1; font-size: 0.6rem;"></i>
                                                 <p>Home & Garden</p>
                                             </a>
@@ -343,7 +304,7 @@
                         <!-- Orders -->
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Orders</p>
                             </a>
@@ -352,7 +313,7 @@
                         <!-- Customers -->
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Customers</p>
                             </a>
@@ -373,7 +334,7 @@
                     <ul class="nav nav-treeview" style="padding-left: 10px;">
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>
                                     Sales Reports
@@ -383,21 +344,21 @@
                             <ul class="nav nav-treeview" style="padding-left: 10px;">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Daily Sales</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Monthly Sales</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link" 
-                                        style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                         <i class="far fa-dot-circle nav-icon" style="color: #48bb78; font-size: 0.7rem;"></i>
                                         <p>Yearly Summary</p>
                                     </a>
@@ -406,7 +367,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link" 
-                                style="border-radius: 10px; margin: 2px 10px; transition: all 0.3s ease;">
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                                 <i class="far fa-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>User Analytics</p>
                             </a>
@@ -415,14 +376,14 @@
                 </li>
 
                 <!-- SUPPORT Section Header -->
-                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 15px 5px 15px;">
+                <li class="nav-header" style="color: #a0aec0; font-weight: 600; font-size: 0.75rem; letter-spacing: 1px; padding: 8px 15px 5px 15px;">
                     <i class="fas fa-info-circle mr-2"></i> SUPPORT
                 </li>
 
                 <!-- Documentation -->
                 <li class="nav-item">
                     <a href="https://adminlte.io/docs/3.1/" target="_blank" class="nav-link" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-book" style="color: #ecc94b;"></i>
                         <p style="font-weight: 500;">
                             Documentation
@@ -434,7 +395,7 @@
                 <!-- Help Center -->
                 <li class="nav-item">
                     <a href="#" class="nav-link" 
-                        style="border-radius: 10px; margin: 5px 10px; transition: all 0.3s ease;">
+                                        style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
                         <i class="nav-icon fas fa-question-circle" style="color: #38b2ac;"></i>
                         <p style="font-weight: 500;">
                             Help Center
@@ -492,7 +453,7 @@
 
     .nav-header {
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        margin-top: 10px;
+        margin-top: 0;
     }
 
     .brand-link:hover {
@@ -564,8 +525,8 @@
     .sidebar .nav-sidebar .nav-item.menu-open > .nav-treeview {
         max-height: 3000px !important;
         opacity: 1 !important;
-        margin-top: 5px !important;
-        margin-bottom: 5px !important;
+        margin-top: 2px !important;
+        margin-bottom: 2px !important;
     }
 
     /* Multi-level nested menu styles */
