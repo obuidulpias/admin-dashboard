@@ -99,8 +99,8 @@
                 @endcan
 
                 <!-- Email Management -->
-                <li class="nav-item {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') ? 'active' : '' }}">
+                <li class="nav-item {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') || request()->routeIs('email-logs.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') || request()->routeIs('email-logs.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-envelope"></i>
                         <p>
                             Email Management
