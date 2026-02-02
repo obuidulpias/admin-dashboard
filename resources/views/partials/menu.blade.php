@@ -89,6 +89,16 @@
                     </a>
                 </li>
                 @endcan
+                <!-- Log Viewer -->
+                <li class="nav-item">
+                    <a href="{{ route('log-viewer.index') }}" 
+                        class="nav-link {{ request()->routeIs('log-viewer.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-alt"></i>
+                        <p>
+                            Log Viewer
+                        </p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="pages/widgets.html" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>

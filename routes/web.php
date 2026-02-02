@@ -5,6 +5,7 @@ use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\AuditLog\AuditLogController;
+use App\Http\Controllers\LogViewer\LogViewerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,10 @@ Route::middleware('auth')->group(function () {
     // Audit Log Routes
     Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     Route::get('audit-logs/{id}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+    
+    // Log Viewer Routes
+    Route::get('log-viewer', [LogViewerController::class, 'index'])->name('log-viewer.index');
+    Route::get('log-viewer/{file}/show/{line}', [LogViewerController::class, 'show'])->name('log-viewer.show');
+    Route::get('log-viewer/{file}/download', [LogViewerController::class, 'download'])->name('log-viewer.download');
+    Route::get('log-viewer/{file}/delete', [LogViewerController::class, 'delete'])->name('log-viewer.delete');
 });
