@@ -2,23 +2,23 @@
 
 @section('main-content')
 
-<div class="log-viewer-container" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+<div class="log-viewer-container" style="height: calc(100vh - 100px); display: flex; flex-direction: column;">
     <!-- Top Navigation Bar -->
-    <div class="log-viewer-header" style="background: #fff; border-bottom: 1px solid #dee2e6; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="{{ route('home') }}" style="color: #495057; text-decoration: none;">
+    <div class="log-viewer-header" style="background: #fff; border-bottom: 1px solid #dee2e6; padding: 6px 12px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <a href="{{ route('home') }}" style="color: #495057; text-decoration: none; font-size: 13px;">
                 <i class="fas fa-arrow-left"></i> Back to Laravel
             </a>
-            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px;">
-                <i class="fab fa-github"></i> Log Viewer
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 16px;">
+                <i class="fab fa-github" style="font-size: 14px;"></i> Log Viewer
             </h3>
         </div>
-        <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
             @if($file && isset($statistics['by_level']) && !empty($statistics['by_level']))
                 <div style="position: relative;">
                     <div class="dropdown">
                         <button class="btn btn-sm dropdown-toggle" 
-                                style="background: #f8f9fa; border: 1px solid #dee2e6; cursor: pointer;" 
+                                style="background: #f8f9fa; border: 1px solid #dee2e6; cursor: pointer; padding: 4px 8px; font-size: 12px;" 
                                 type="button" 
                                 id="levelFilterDropdown" 
                                 data-toggle="dropdown" 
@@ -98,15 +98,15 @@
                 @endif
                 <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
                        placeholder="Search in '{{ $file }}' →" 
-                       style="padding: 8px 12px; border: 1px solid #dee2e6; border-radius: 4px; width: 250px;">
-                <button type="submit" style="background: none; border: none; cursor: pointer;">
-                    <i class="fas fa-search"></i>
+                       style="padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 3px; width: 200px; font-size: 12px;">
+                <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0;">
+                    <i class="fas fa-search" style="font-size: 14px;"></i>
                 </button>
             </form>
-            <a href="{{ route('log-viewer.index', ['file' => $file]) }}" style="color: #495057; text-decoration: none; font-size: 18px;" title="Refresh">
+            <a href="{{ route('log-viewer.index', ['file' => $file]) }}" style="color: #495057; text-decoration: none; font-size: 14px;" title="Refresh">
                 <i class="fas fa-sync-alt"></i>
             </a>
-            <button style="background: none; border: none; cursor: pointer; font-size: 18px; color: #495057;" title="Settings">
+            <button style="background: none; border: none; cursor: pointer; font-size: 14px; color: #495057; padding: 0;" title="Settings">
                 <i class="fas fa-cog"></i>
             </button>
         </div>
@@ -115,16 +115,16 @@
     <!-- Main Content Area -->
     <div style="display: flex; flex: 1; overflow: hidden;">
         <!-- Left Sidebar - Log Files -->
-        <div class="log-viewer-sidebar" style="width: 300px; background: #f8f9fa; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; overflow: hidden;">
-            <div style="padding: 15px; border-bottom: 1px solid #dee2e6;">
-                <h5 style="margin: 0 0 10px 0;">Log files on {{ ucfirst(config('app.env')) }}</h5>
-                <select class="form-control form-control-sm" onchange="window.location.href='{{ route('log-viewer.index') }}?sort=' + this.value">
+        <div class="log-viewer-sidebar" style="width: 220px; background: #f8f9fa; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; overflow: hidden;">
+            <div style="padding: 8px 12px; border-bottom: 1px solid #dee2e6;">
+                <h5 style="margin: 0 0 6px 0; font-size: 14px;">Log files on {{ ucfirst(config('app.env')) }}</h5>
+                <select class="form-control form-control-sm" style="font-size: 12px; padding: 4px 8px;" onchange="window.location.href='{{ route('log-viewer.index') }}?sort=' + this.value">
                     <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Newest first</option>
                     <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>Oldest first</option>
                 </select>
             </div>
-            <div style="padding: 15px; border-bottom: 1px solid #dee2e6;">
-                <input type="text" class="form-control form-control-sm" placeholder="root" readonly>
+            <div style="padding: 8px 12px; border-bottom: 1px solid #dee2e6;">
+                <input type="text" class="form-control form-control-sm" placeholder="root" readonly style="font-size: 12px; padding: 4px 8px;">
             </div>
             <div style="flex: 1; overflow-y: auto; padding: 10px;">
                 @forelse($logFiles as $logFile)
@@ -142,19 +142,30 @@
                             <div class="dropdown" style="position: relative;">
                                 <button class="btn btn-sm" 
                                         style="background: none; border: none; color: inherit; padding: 0 5px;"
-                                        onclick="event.stopPropagation(); toggleFileMenu('{{ $logFile['name'] }}', event)">
+                                        onclick="event.stopPropagation(); toggleFileMenu('{{ md5($logFile['name']) }}', event)">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <div id="menu-{{ md5($logFile['name']) }}" 
-                                     class="dropdown-menu" 
-                                     style="display: none; position: absolute; right: 0; top: 100%; z-index: 1000; background: white; border: 1px solid #dee2e6; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-width: 150px;">
-                                    <a class="dropdown-item" href="{{ route('log-viewer.download', $logFile['name']) }}" style="padding: 8px 15px; display: block; text-decoration: none; color: #495057;">
-                                        <i class="fas fa-download"></i> Download
+                                     class="dropdown-menu log-viewer-menu" 
+                                     style="display: none; position: absolute; left: 0; top: 100%; z-index: 1000;">
+                                    <a class="dropdown-item log-viewer-menu-item" href="#" 
+                                       onclick="event.preventDefault(); clearIndex('{{ $logFile['name'] }}');">
+                                        <i class="fas fa-database"></i>
+                                        <span>Clear index</span>
                                     </a>
-                                    <a class="dropdown-item" href="#" 
-                                       onclick="event.preventDefault(); if(confirm('Are you sure?')) { window.location.href='{{ route('log-viewer.delete', $logFile['name']) }}'; }"
-                                       style="padding: 8px 15px; display: block; text-decoration: none; color: #dc3545;">
-                                        <i class="fas fa-trash"></i> Delete
+                                    <a class="dropdown-item log-viewer-menu-item" href="{{ route('log-viewer.download', $logFile['name']) }}">
+                                        <i class="fas fa-cloud-download-alt"></i>
+                                        <span>Download</span>
+                                    </a>
+                                    <a class="dropdown-item log-viewer-menu-item log-viewer-menu-item-danger" href="#" 
+                                       onclick="event.preventDefault(); deleteFile('{{ $logFile['name'] }}');">
+                                        <i class="fas fa-trash"></i>
+                                        <span>Delete</span>
+                                    </a>
+                                    <a class="dropdown-item log-viewer-menu-item log-viewer-menu-item-danger" href="#" 
+                                       onclick="event.preventDefault(); showDeleteMultipleModal();">
+                                        <i class="fas fa-trash-alt"></i>
+                                        <span>Delete Multiple</span>
                                     </a>
                                 </div>
                             </div>
@@ -171,13 +182,13 @@
         <!-- Right Main Panel - Log Entries -->
         <div class="log-viewer-main" style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: white;">
             @if($file)
-                <div style="padding: 15px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        <select class="form-control form-control-sm" style="width: auto;" onchange="updateSort(this.value)">
+                <div style="padding: 6px 12px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select class="form-control form-control-sm" style="width: auto; padding: 4px 8px; font-size: 12px;" onchange="updateSort(this.value)">
                             <option value="newest" selected>Newest first</option>
                             <option value="oldest">Oldest first</option>
                         </select>
-                        <select class="form-control form-control-sm" style="width: auto;" onchange="updatePerPage(this.value)">
+                        <select class="form-control form-control-sm" style="width: auto; padding: 4px 8px; font-size: 12px;" onchange="updatePerPage(this.value)">
                             <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25 items per page</option>
                             <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50 items per page</option>
                             <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100 items per page</option>
@@ -265,19 +276,38 @@
                 
                 <!-- Pagination -->
                 @if(isset($logData['last_page']) && $logData['last_page'] > 1)
-                    <div style="padding: 15px; border-top: 1px solid #dee2e6; display: flex; justify-content: center; gap: 5px;">
-                        @for($i = 1; $i <= $logData['last_page']; $i++)
-                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $i])) }}" 
-                               style="padding: 8px 12px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; 
-                                      {{ $i == $logData['current_page'] ? 'background: #007bff; color: white; border-color: #007bff;' : 'background: white;' }}
-                                      border-radius: 4px; margin: 0 2px;">
-                                {{ $i }}
+                    <div style="padding: 8px; border-top: 1px solid #dee2e6; display: flex; justify-content: center; gap: 2px; align-items: center;">
+                        @php
+                            $currentPage = $logData['current_page'];
+                            $lastPage = $logData['last_page'];
+                        @endphp
+                        
+                        <!-- Page 1 -->
+                        @if($lastPage >= 1)
+                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => 1])) }}" 
+                               style="padding: 2px 6px; border: 1px solid #dee2e6; text-decoration: none; color: {{ $currentPage == 1 ? 'white' : '#495057' }}; 
+                                      {{ $currentPage == 1 ? 'background: #007bff; border-color: #007bff;' : 'background: white;' }}
+                                      border-radius: 2px; font-size: 11px; min-width: 24px; text-align: center; display: inline-block; line-height: 1.4;">
+                                1
                             </a>
-                        @endfor
-                        @if($logData['current_page'] < $logData['last_page'])
-                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $logData['current_page'] + 1])) }}" 
-                               style="padding: 8px 12px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; border-radius: 4px; margin-left: 5px;">
-                                <i class="fas fa-chevron-right"></i>
+                        @endif
+                        
+                        <!-- Page 2 -->
+                        @if($lastPage >= 2)
+                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => 2])) }}" 
+                               style="padding: 2px 6px; border: 1px solid #dee2e6; text-decoration: none; color: {{ $currentPage == 2 ? 'white' : '#495057' }}; 
+                                      {{ $currentPage == 2 ? 'background: #007bff; border-color: #007bff;' : 'background: white;' }}
+                                      border-radius: 2px; font-size: 11px; min-width: 24px; text-align: center; display: inline-block; line-height: 1.4;">
+                                2
+                            </a>
+                        @endif
+                        
+                        <!-- Next Button -->
+                        @if($currentPage < $lastPage)
+                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $currentPage + 1])) }}" 
+                               style="padding: 2px 6px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; 
+                                      border-radius: 2px; font-size: 11px; min-width: 24px; text-align: center; display: inline-block; line-height: 1.4;">
+                                <i class="fas fa-chevron-right" style="font-size: 9px;"></i>
                             </a>
                         @endif
                     </div>
@@ -316,6 +346,58 @@
     
     .dropdown-item:hover {
         background-color: #f8f9fa;
+    }
+    
+    /* Log viewer menu - clean and proper styling */
+    .log-viewer-menu {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        min-width: 200px;
+        padding: 4px 0;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item {
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: #495057;
+        font-size: 13px;
+        white-space: nowrap;
+        transition: background-color 0.2s ease;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item i {
+        width: 18px;
+        text-align: center;
+        color: #6c757d;
+        flex-shrink: 0;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item span {
+        flex: 1;
+        color: inherit;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item-danger {
+        color: #dc3545;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item-danger:hover {
+        background-color: #fff5f5;
+        color: #dc3545;
+    }
+    
+    .log-viewer-menu .log-viewer-menu-item-danger i {
+        color: #dc3545;
     }
     
     .table td {
@@ -407,8 +489,8 @@
         }
     }
     
-    function toggleFileMenu(fileName, event) {
-        const menuId = 'menu-' + btoa(fileName).replace(/[^a-zA-Z0-9]/g, '');
+    function toggleFileMenu(fileHash, event) {
+        const menuId = 'menu-' + fileHash;
         const menu = document.getElementById(menuId);
         
         // Close all other menus
@@ -428,6 +510,109 @@
                 document.removeEventListener('click', closeMenu);
             });
         }, 0);
+    }
+    
+    function clearIndex(fileName) {
+        if (confirm('Are you sure you want to clear the index for this log file?')) {
+            fetch('{{ route("log-viewer.clear-index", ":file") }}'.replace(':file', fileName), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Index cleared successfully');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to clear index'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while clearing the index');
+            });
+        }
+    }
+    
+    function deleteFile(fileName) {
+        if (confirm('Are you sure you want to delete this log file?')) {
+            window.location.href = '{{ route("log-viewer.delete", ":file") }}'.replace(':file', fileName);
+        }
+    }
+    
+    function showDeleteMultipleModal() {
+        // Close all menus first
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            m.style.display = 'none';
+        });
+        
+        // Create modal HTML
+        const modalHtml = `
+            <div id="deleteMultipleModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; border-radius: 8px; padding: 20px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h4 style="margin: 0 0 15px 0;">Delete Multiple Log Files</h4>
+                    <p style="margin: 0 0 15px 0; color: #6c757d;">Select log files to delete:</p>
+                    <div id="fileList" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                        @foreach($logFiles as $logFile)
+                            <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-bottom: 1px solid #f0f0f0;">
+                                <input type="checkbox" name="files[]" value="{{ $logFile['name'] }}" style="margin-right: 10px;">
+                                <span style="flex: 1;">{{ $logFile['name'] }}</span>
+                                <span style="color: #6c757d; font-size: 12px;">{{ app(\App\Services\LogViewerService::class)->formatFileSize($logFile['size']) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="closeDeleteMultipleModal()" style="padding: 8px 16px; border: 1px solid #dee2e6; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                        <button onclick="confirmDeleteMultiple()" style="padding: 8px 16px; border: none; background: #dc3545; color: white; border-radius: 4px; cursor: pointer;">Delete Selected</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+    
+    function closeDeleteMultipleModal() {
+        const modal = document.getElementById('deleteMultipleModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+    
+    function confirmDeleteMultiple() {
+        const checkboxes = document.querySelectorAll('#fileList input[type="checkbox"]:checked');
+        const files = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (files.length === 0) {
+            alert('Please select at least one file to delete');
+            return;
+        }
+        
+        if (confirm(`Are you sure you want to delete ${files.length} file(s)?`)) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("log-viewer.delete-multiple") }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
+            files.forEach(file => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'files[]';
+                input.value = file;
+                form.appendChild(input);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
     }
     
     function selectAllLevels() {
