@@ -4,6 +4,7 @@ use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
+use App\Logging\CustomRotatingFileHandler;
 
 return [
 
@@ -54,7 +55,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => explode(',', (string) env('LOG_STACK', 'daily_custom')),
             'ignore_exceptions' => false,
         ],
 
@@ -71,6 +72,18 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+        ],
+
+        'daily_custom' => [
+            'driver' => 'monolog',
+            'handler' => CustomRotatingFileHandler::class,
+            'handler_with' => [
+                'filename' => storage_path('logs/laravel.log'),
+                'maxFiles' => env('LOG_DAILY_DAYS', 14),
+                'level' => env('LOG_LEVEL', 'debug'),
+            ],
+            'formatter' => env('LOG_FORMATTER'),
+            'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'slack' => [

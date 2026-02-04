@@ -48,4 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::get('log-viewer/{file}/show/{line}', [LogViewerController::class, 'show'])->name('log-viewer.show');
     Route::get('log-viewer/{file}/download', [LogViewerController::class, 'download'])->name('log-viewer.download');
     Route::get('log-viewer/{file}/delete', [LogViewerController::class, 'delete'])->name('log-viewer.delete');
+    Route::post('log-viewer/{file}/clear-index', [LogViewerController::class, 'clearIndex'])->name('log-viewer.clear-index');
+    Route::post('log-viewer/delete-multiple', [LogViewerController::class, 'deleteMultiple'])->name('log-viewer.delete-multiple');
 });

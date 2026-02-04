@@ -5,6 +5,7 @@ namespace App\Http\Controllers\LogViewer;
 use App\Http\Controllers\Controller;
 use App\Services\LogViewerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class LogViewerController extends Controller
 {
@@ -119,6 +120,66 @@ class LogViewerController extends Controller
         
         return redirect()->route('log-viewer.index')
             ->with('success', 'Log file deleted successfully');
+    }
+
+    /**
+     * Clear index/cache for log file
+     */
+    public function clearIndex($file)
+    {
+        try {
+            // Clear Laravel cache
+            Artisan::call('cache:clear');
+            
+            // Clear config cache
+            Artisan::call('config:clear');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Index cleared successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete multiple log files
+     */
+    public function deleteMultiple(Request $request)
+    {
+        $files = $request->input('files', []);
+        $deleted = [];
+        $errors = [];
+        
+        foreach ($files as $file) {
+            $filePath = storage_path('logs/' . $file);
+            
+            if (file_exists($filePath)) {
+                try {
+                    unlink($filePath);
+                    $deleted[] = $file;
+                } catch (\Exception $e) {
+                    $errors[] = $file . ': ' . $e->getMessage();
+                }
+            } else {
+                $errors[] = $file . ': File not found';
+            }
+        }
+        
+        $message = '';
+        if (count($deleted) > 0) {
+            $message = count($deleted) . ' file(s) deleted successfully.';
+        }
+        if (count($errors) > 0) {
+            $message .= ' Errors: ' . implode(', ', $errors);
+        }
+        
+        return redirect()->route('log-viewer.index')
+            ->with('success', $message ?: 'No files were deleted');
     }
 }
 
