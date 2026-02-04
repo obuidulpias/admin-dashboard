@@ -99,30 +99,38 @@
                 @endcan
 
                 <!-- Email Management -->
-                <li class="nav-item {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') || request()->routeIs('email-logs.*') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') || request()->routeIs('email-logs.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-envelope"></i>
-                        <p>
+                <li class="nav-item {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') || request()->routeIs('email-logs.*') ? 'menu-open' : '' }}" 
+                    style="margin: 2px 0;">
+                    <a href="#" class="nav-link {{ request()->routeIs('email-types.*') || request()->routeIs('email-templates.*') || request()->routeIs('email-logs.*') ? 'active' : '' }}" 
+                        style="border-radius: 10px; margin: 0 10px; transition: all 0.3s ease;">
+                        <i class="nav-icon fas fa-envelope" style="color: #f56565;"></i>
+                        <p style="font-weight: 500;">
                             Email Management
                             <i class="fas fa-angle-left right"></i>
                         </p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="padding-left: 10px;">
                         <li class="nav-item">
-                            <a href="{{ route('email-types.index') }}" class="nav-link {{ request()->routeIs('email-types.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('email-types.index') }}" 
+                                class="nav-link {{ request()->routeIs('email-types.*') ? 'active' : '' }}" 
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
+                                <i class="far fa-dot-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Email Types</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('email-templates.index') }}" class="nav-link {{ request()->routeIs('email-templates.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('email-templates.index') }}" 
+                                class="nav-link {{ request()->routeIs('email-templates.*') ? 'active' : '' }}" 
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
+                                <i class="far fa-dot-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Email Templates</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('email-logs.index') }}" class="nav-link {{ request()->routeIs('email-logs.*') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('email-logs.index') }}" 
+                                class="nav-link {{ request()->routeIs('email-logs.*') ? 'active' : '' }}" 
+                                style="border-radius: 10px; margin: 1px 10px; transition: all 0.3s ease;">
+                                <i class="far fa-dot-circle nav-icon" style="color: #ed8936;"></i>
                                 <p>Email Logs</p>
                             </a>
                         </li>
