@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return view('home');
+        return redirect()->route('log-viewer.index');
     } else {
         return redirect()->route('login');
     }

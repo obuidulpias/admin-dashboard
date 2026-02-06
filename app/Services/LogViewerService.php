@@ -160,6 +160,9 @@ class LogViewerService
             if (!in_array($entry['level'], $levels)) {
                 return null;
             }
+        } elseif (!empty($filters['level_filter_applied']) && empty($filters['levels'])) {
+            // Filter was explicitly applied but no levels selected - show nothing
+            return null;
         } elseif (!empty($filters['level'])) {
             // Backward compatibility with single level filter
             if ($entry['level'] !== strtoupper($filters['level'])) {

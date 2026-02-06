@@ -1,46 +1,139 @@
-@extends('layouts.admin')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Log Viewer - {{ config('app.name') }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; }
+        
+        /* Log file items */
+        .log-file-item:hover { opacity: 0.9; }
+        .log-file-item { transition: all 0.2s ease; }
+        
+        /* Table styles */
+        .log-entry-row:hover { background-color: #f8f9fa !important; }
+        .table td { vertical-align: middle; padding: 10px 12px; font-size: 13px; }
+        .table th { padding: 12px; font-size: 13px; font-weight: 600; }
+        
+        /* Dropdown menu */
+        .dropdown-menu { padding: 0; }
+        .dropdown-item:hover { background-color: #f8f9fa; }
+        
+        /* Log viewer popup menu */
+        .log-viewer-menu { 
+            background: white; 
+            border: 1px solid #dee2e6; 
+            border-radius: 6px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+            min-width: 180px; 
+            padding: 6px 0; 
+        }
+        .log-viewer-menu .log-viewer-menu-item { 
+            padding: 10px 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            text-decoration: none; 
+            color: #333; 
+            font-size: 14px; 
+            white-space: nowrap; 
+            transition: background-color 0.15s ease; 
+        }
+        .log-viewer-menu .log-viewer-menu-item:hover { 
+            background-color: #f0f0f0; 
+            color: #333; 
+        }
+        .log-viewer-menu .log-viewer-menu-item i { 
+            width: 18px; 
+            text-align: center; 
+            color: #555; 
+            flex-shrink: 0; 
+            font-size: 14px;
+        }
+        .log-viewer-menu .log-viewer-menu-item span { 
+            flex: 1; 
+            color: inherit; 
+        }
+        .log-viewer-menu .log-viewer-menu-item-danger { 
+            color: #dc3545; 
+        }
+        .log-viewer-menu .log-viewer-menu-item-danger:hover { 
+            background-color: #fff0f0; 
+            color: #dc3545; 
+        }
+        .log-viewer-menu .log-viewer-menu-item-danger i { 
+            color: #dc3545; 
+        }
+        
+        /* Badge */
+        .badge { padding: 5px 10px; font-size: 11px; font-weight: 500; }
+        
+        /* Expand icon */
+        .expand-icon { cursor: pointer; }
+        
+        /* Stack trace */
+        .stack-trace-row td { padding: 0 !important; }
+        .log-entry-row.expanded { background-color: #fff !important; }
+        .log-entry-row.expanded td { border-bottom: none; padding-bottom: 0; }
+        .log-entry-row.expanded td:last-child { padding-bottom: 10px; }
+        .log-message-full { animation: fadeIn 0.2s ease-in; margin-bottom: 0; }
+        .stack-trace-row { background-color: #f8f9fa !important; }
+        .stack-trace-row td { border-top: none !important; padding-top: 0 !important; }
+        
+        /* Form controls */
+        .form-control-sm { font-size: 13px; padding: 6px 10px; }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(-5px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body>
 
-@section('main-content')
-
-<div class="log-viewer-container" style="height: calc(100vh - 100px); display: flex; flex-direction: column;">
+<div class="log-viewer-container" style="height: 100vh; display: flex; flex-direction: column;">
     <!-- Top Navigation Bar -->
-    <div class="log-viewer-header" style="background: #fff; border-bottom: 1px solid #dee2e6; padding: 6px 12px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <a href="{{ route('home') }}" style="color: #495057; text-decoration: none; font-size: 13px;">
-                <i class="fas fa-arrow-left"></i> Back to Laravel
-            </a>
-            <h3 style="margin: 0; display: flex; align-items: center; gap: 6px; font-size: 16px;">
-                <i class="fab fa-github" style="font-size: 14px;"></i> Log Viewer
+    <div class="log-viewer-header" style="background: #fff; border-bottom: 1px solid #dee2e6; padding: 12px 25px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <h3 style="margin: 0; display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 600; color: #333;">
+                <i class="fas fa-file-alt" style="font-size: 22px; color: #007bff;"></i> Log Viewer
             </h3>
         </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
             @if($file && isset($statistics['by_level']) && !empty($statistics['by_level']))
                 <div style="position: relative;">
-                    <div class="dropdown">
-                        <button class="btn btn-sm dropdown-toggle" 
-                                style="background: #f8f9fa; border: 1px solid #dee2e6; cursor: pointer; padding: 4px 8px; font-size: 12px;" 
+                    <div class="dropdown" style="position: relative;">
+                        <button class="btn btn-sm" 
+                                style="background: #f8f9fa; border: 1px solid #dee2e6; cursor: pointer; padding: 8px 14px; font-size: 14px; border-radius: 4px;" 
                                 type="button" 
                                 id="levelFilterDropdown" 
-                                data-toggle="dropdown" 
-                                aria-haspopup="true" 
-                                aria-expanded="false">
+                                onclick="toggleLevelFilter(event)">
                             @php
                                 $selectedLevels = $filters['levels'] ?? [];
+                                $levelFilterApplied = $filters['level_filter_applied'] ?? false;
                                 $levelCounts = [];
                                 $totalCount = 0;
                                 $selectedCount = 0;
                                 foreach($statistics['by_level'] as $level => $count) {
                                     $levelCounts[] = ['level' => $level, 'count' => $count];
                                     $totalCount += $count;
-                                    if(empty($selectedLevels) || in_array($level, $selectedLevels)) {
+                                    // If filter not applied, or level is in selected levels
+                                    if((!$levelFilterApplied && empty($selectedLevels)) || in_array($level, $selectedLevels)) {
                                         $selectedCount += $count;
                                     }
                                 }
-                                if(empty($selectedLevels)) {
+                                if(!$levelFilterApplied && empty($selectedLevels)) {
                                     $summary = $totalCount . ' entries in ' . $levelCounts[0]['count'] . ' ' . $levelCounts[0]['level'];
                                     if(count($levelCounts) > 1) {
                                         $summary .= ' + ' . (count($levelCounts) - 1) . ' more';
                                     }
+                                } elseif($levelFilterApplied && empty($selectedLevels)) {
+                                    $summary = '0 entries (none selected)';
                                 } else {
                                     $firstLevel = array_filter($levelCounts, function($l) use ($selectedLevels) { return in_array($l['level'], $selectedLevels); });
                                     $firstLevel = reset($firstLevel);
@@ -51,15 +144,20 @@
                                     }
                                 }
                             @endphp
-                            {{ $summary }}
+                            {{ $summary }} <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 5px;"></i>
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="levelFilterDropdown" style="padding: 10px; min-width: 250px;">
+                        <div id="levelFilterMenu" class="dropdown-menu" style="display: none; position: absolute; top: 100%; right: 0; padding: 12px; min-width: 280px; background: white; border: 1px solid #dee2e6; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; margin-top: 5px;">
                             <form method="GET" action="{{ route('log-viewer.index') }}" id="levelFilterForm">
                                 <input type="hidden" name="file" value="{{ $file }}">
                                 <input type="hidden" name="search" value="{{ $filters['search'] ?? '' }}">
-                                <div style="margin-bottom: 10px;">
-                                    <a href="#" onclick="event.preventDefault(); selectAllLevels();" style="font-size: 12px; color: #6c757d; text-decoration: none; margin-right: 10px;">Select all</a>
-                                    <a href="#" onclick="event.preventDefault(); deselectAllLevels();" style="font-size: 12px; color: #6c757d; text-decoration: none;">Deselect all</a>
+                                <input type="hidden" name="level_filter_applied" value="1">
+                                <div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #dee2e6; display: flex; gap: 15px;">
+                                    <a href="#" onclick="event.preventDefault(); event.stopPropagation(); selectAllLevels();" style="font-size: 13px; color: #007bff; text-decoration: none; font-weight: 500;">
+                                        <i class="fas fa-check-double" style="margin-right: 4px;"></i> Select all
+                                    </a>
+                                    <a href="#" onclick="event.preventDefault(); event.stopPropagation(); deselectAllLevels();" style="font-size: 13px; color: #dc3545; text-decoration: none; font-weight: 500;">
+                                        <i class="fas fa-times" style="margin-right: 4px;"></i> Deselect all
+                                    </a>
                                 </div>
                                 @php
                                     $levelOrder = ['EMERGENCY', 'ALERT', 'CRITICAL', 'ERROR', 'WARNING', 'NOTICE', 'INFO', 'DEBUG'];
@@ -67,23 +165,21 @@
                                 @endphp
                                 @foreach($levelOrder as $level)
                                     @if(isset($levelStats[$level]))
-                                        <div style="padding: 5px 0;">
+                                        <div style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
                                             <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
                                                 <input type="checkbox" 
                                                        name="levels[]" 
                                                        value="{{ $level }}" 
                                                        class="level-checkbox"
-                                                       {{ (empty($selectedLevels) || in_array($level, $selectedLevels)) ? 'checked' : '' }}
-                                                       style="margin-right: 10px;">
-                                                <span style="flex: 1; font-size: 14px;">{{ $level }}</span>
-                                                <span style="font-size: 12px; color: #6c757d;">{{ $levelStats[$level] }} {{ $levelStats[$level] == 1 ? 'entry' : 'entries' }}</span>
+                                                       {{ ((!$levelFilterApplied && empty($selectedLevels)) || in_array($level, $selectedLevels)) ? 'checked' : '' }}
+                                                       onchange="handleLevelChange(this)"
+                                                       style="margin-right: 12px; width: 16px; height: 16px;">
+                                                <span style="flex: 1; font-size: 14px; font-weight: 500;">{{ $level }}</span>
+                                                <span style="font-size: 13px; color: #6c757d;">{{ $levelStats[$level] }} {{ $levelStats[$level] == 1 ? 'entry' : 'entries' }}</span>
                                             </label>
                                         </div>
                                     @endif
                                 @endforeach
-                                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #dee2e6;">
-                                    <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">Apply Filter</button>
-                                </div>
                             </form>
                         </div>
                     </div>
@@ -98,56 +194,59 @@
                 @endif
                 <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" 
                        placeholder="Search in '{{ $file }}' →" 
-                       style="padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 3px; width: 200px; font-size: 12px;">
-                <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0;">
-                    <i class="fas fa-search" style="font-size: 14px;"></i>
+                       style="padding: 8px 12px; border: 1px solid #dee2e6; border-radius: 4px; width: 220px; font-size: 14px;">
+                <button type="submit" style="background: none; border: none; cursor: pointer; padding: 5px;">
+                    <i class="fas fa-search" style="font-size: 16px; color: #495057;"></i>
                 </button>
             </form>
-            <a href="{{ route('log-viewer.index', ['file' => $file]) }}" style="color: #495057; text-decoration: none; font-size: 14px;" title="Refresh">
+            <a href="{{ route('log-viewer.index', ['file' => $file]) }}" style="color: #495057; text-decoration: none; font-size: 18px; padding: 8px;" title="Refresh">
                 <i class="fas fa-sync-alt"></i>
             </a>
-            <button style="background: none; border: none; cursor: pointer; font-size: 14px; color: #495057; padding: 0;" title="Settings">
-                <i class="fas fa-cog"></i>
-            </button>
+            <a href="{{ route('logout') }}" style="color: #dc3545; text-decoration: none; font-size: 18px; padding: 8px; margin-left: 5px;" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
         </div>
     </div>
 
     <!-- Main Content Area -->
     <div style="display: flex; flex: 1; overflow: hidden;">
         <!-- Left Sidebar - Log Files -->
-        <div class="log-viewer-sidebar" style="width: 220px; background: #f8f9fa; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; overflow: hidden;">
-            <div style="padding: 8px 12px; border-bottom: 1px solid #dee2e6;">
-                <h5 style="margin: 0 0 6px 0; font-size: 14px;">Log files on {{ ucfirst(config('app.env')) }}</h5>
-                <select class="form-control form-control-sm" style="font-size: 12px; padding: 4px 8px;" onchange="window.location.href='{{ route('log-viewer.index') }}?sort=' + this.value">
+        <div class="log-viewer-sidebar" style="width: 260px; background: #f8f9fa; border-right: 1px solid #dee2e6; display: flex; flex-direction: column; overflow: hidden;">
+            <div style="padding: 12px 15px; border-bottom: 1px solid #dee2e6;">
+                <h5 style="margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #333;">Log files on {{ ucfirst(config('app.env')) }}</h5>
+                <select class="form-control form-control-sm" style="font-size: 13px; padding: 6px 10px;" onchange="window.location.href='{{ route('log-viewer.index') }}?sort=' + this.value">
                     <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Newest first</option>
                     <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>Oldest first</option>
                 </select>
             </div>
-            <div style="padding: 8px 12px; border-bottom: 1px solid #dee2e6;">
-                <input type="text" class="form-control form-control-sm" placeholder="root" readonly style="font-size: 12px; padding: 4px 8px;">
+            <div style="padding: 10px 15px; border-bottom: 1px solid #dee2e6;">
+                <div style="display: flex; align-items: center; gap: 8px; color: #666; font-size: 13px;">
+                    <i class="fas fa-folder" style="color: #ffc107;"></i>
+                    <span>root</span>
+                </div>
             </div>
-            <div style="flex: 1; overflow-y: auto; padding: 10px;">
+            <div style="flex: 1; overflow-y: auto; padding: 10px 12px;">
                 @forelse($logFiles as $logFile)
                     <div class="log-file-item" 
-                         style="padding: 12px; margin-bottom: 5px; border-radius: 4px; cursor: pointer; 
+                         style="padding: 12px 14px; margin-bottom: 6px; border-radius: 6px; cursor: pointer; border: 1px solid {{ $file === $logFile['name'] ? '#007bff' : '#e9ecef' }};
                                 {{ $file === $logFile['name'] ? 'background: #007bff; color: white;' : 'background: white;' }}"
                          onclick="window.location.href='{{ route('log-viewer.index', ['file' => $logFile['name']]) }}'">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 500; font-size: 14px;">{{ $logFile['name'] }}</div>
-                                <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $logFile['name'] }}</div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 3px;">
                                     {{ app(\App\Services\LogViewerService::class)->formatFileSize($logFile['size']) }}
                                 </div>
                             </div>
                             <div class="dropdown" style="position: relative;">
-                                <button class="btn btn-sm" 
+                                <button class="btn btn-sm file-menu-btn" 
                                         style="background: none; border: none; color: inherit; padding: 0 5px;"
-                                        onclick="event.stopPropagation(); toggleFileMenu('{{ md5($logFile['name']) }}', event)">
+                                        onclick="event.stopPropagation(); toggleFileMenu('{{ md5($logFile['name']) }}', this, event)">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <div id="menu-{{ md5($logFile['name']) }}" 
                                      class="dropdown-menu log-viewer-menu" 
-                                     style="display: none; position: absolute; left: 0; top: 100%; z-index: 1000;">
+                                     style="display: none; position: fixed; z-index: 1000;">
                                     <a class="dropdown-item log-viewer-menu-item" href="#" 
                                        onclick="event.preventDefault(); clearIndex('{{ $logFile['name'] }}');">
                                         <i class="fas fa-database"></i>
@@ -218,13 +317,11 @@
                                     style="cursor: pointer; {{ in_array($entry['level'], ['ERROR', 'CRITICAL', 'EMERGENCY', 'ALERT']) ? 'background-color: #fff5f5;' : '' }}">
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-chevron-right expand-chevron" style="color: #6c757d; font-size: 12px; transition: transform 0.3s;"></i>
                                             @if($entry['level'] === 'EMERGENCY' || $entry['level'] === 'ALERT' || $entry['level'] === 'CRITICAL')
                                                 <i class="fas fa-exclamation-circle" style="color: #dc3545;"></i>
                                             @elseif($entry['level'] === 'ERROR')
                                                 <i class="fas fa-exclamation-circle" style="color: #dc3545;"></i>
-                                                @if(!empty($entry['stack_trace']))
-                                                    <i class="fas fa-chevron-right expand-chevron" style="color: #6c757d; font-size: 12px; transition: transform 0.3s;"></i>
-                                                @endif
                                             @elseif($entry['level'] === 'WARNING')
                                                 <i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i>
                                             @elseif($entry['level'] === 'NOTICE')
@@ -274,44 +371,85 @@
                     </table>
                 </div>
                 
-                <!-- Pagination -->
-                @if(isset($logData['last_page']) && $logData['last_page'] > 1)
-                    <div style="padding: 8px; border-top: 1px solid #dee2e6; display: flex; justify-content: center; gap: 2px; align-items: center;">
-                        @php
-                            $currentPage = $logData['current_page'];
-                            $lastPage = $logData['last_page'];
-                        @endphp
-                        
-                        <!-- Page 1 -->
-                        @if($lastPage >= 1)
-                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => 1])) }}" 
-                               style="padding: 2px 6px; border: 1px solid #dee2e6; text-decoration: none; color: {{ $currentPage == 1 ? 'white' : '#495057' }}; 
-                                      {{ $currentPage == 1 ? 'background: #007bff; border-color: #007bff;' : 'background: white;' }}
-                                      border-radius: 2px; font-size: 11px; min-width: 24px; text-align: center; display: inline-block; line-height: 1.4;">
-                                1
-                            </a>
-                        @endif
-                        
-                        <!-- Page 2 -->
-                        @if($lastPage >= 2)
-                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => 2])) }}" 
-                               style="padding: 2px 6px; border: 1px solid #dee2e6; text-decoration: none; color: {{ $currentPage == 2 ? 'white' : '#495057' }}; 
-                                      {{ $currentPage == 2 ? 'background: #007bff; border-color: #007bff;' : 'background: white;' }}
-                                      border-radius: 2px; font-size: 11px; min-width: 24px; text-align: center; display: inline-block; line-height: 1.4;">
-                                2
-                            </a>
-                        @endif
-                        
-                        <!-- Next Button -->
-                        @if($currentPage < $lastPage)
-                            <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $currentPage + 1])) }}" 
-                               style="padding: 2px 6px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; 
-                                      border-radius: 2px; font-size: 11px; min-width: 24px; text-align: center; display: inline-block; line-height: 1.4;">
-                                <i class="fas fa-chevron-right" style="font-size: 9px;"></i>
-                            </a>
+                <!-- Footer / Pagination -->
+                <div style="padding: 12px 15px; border-top: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa;">
+                    @php
+                        $currentPage = $logData['current_page'] ?? 1;
+                        $lastPage = $logData['last_page'] ?? 1;
+                        $total = $logData['total'] ?? count($logData['entries'] ?? []);
+                        $start = max(1, $currentPage - 2);
+                        $end = min($lastPage, $currentPage + 2);
+                    @endphp
+                    
+                    <!-- Left: Entry count -->
+                    <div style="color: #6c757d; font-size: 13px;">
+                        <i class="fas fa-list" style="margin-right: 5px;"></i>
+                        {{ $total }} {{ $total == 1 ? 'entry' : 'entries' }}
+                    </div>
+                    
+                    <!-- Center: Pagination (only if multiple pages) -->
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        @if($lastPage > 1)
+                            <!-- Previous Button -->
+                            @if($currentPage > 1)
+                                <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $currentPage - 1])) }}" 
+                                   style="padding: 6px 10px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; 
+                                          border-radius: 4px; font-size: 12px;">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            @endif
+                            
+                            <!-- First Page -->
+                            @if($start > 1)
+                                <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => 1])) }}" 
+                                   style="padding: 6px 12px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; 
+                                          border-radius: 4px; font-size: 12px;">
+                                    1
+                                </a>
+                                @if($start > 2)
+                                    <span style="padding: 6px 8px; color: #6c757d;">...</span>
+                                @endif
+                            @endif
+                            
+                            <!-- Page Numbers -->
+                            @for($i = $start; $i <= $end; $i++)
+                                <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $i])) }}" 
+                                   style="padding: 6px 12px; border: 1px solid {{ $currentPage == $i ? '#007bff' : '#dee2e6' }}; text-decoration: none; 
+                                          color: {{ $currentPage == $i ? 'white' : '#495057' }}; 
+                                          background: {{ $currentPage == $i ? '#007bff' : 'white' }}; 
+                                          border-radius: 4px; font-size: 12px; font-weight: {{ $currentPage == $i ? '600' : '400' }};">
+                                    {{ $i }}
+                                </a>
+                            @endfor
+                            
+                            <!-- Last Page -->
+                            @if($end < $lastPage)
+                                @if($end < $lastPage - 1)
+                                    <span style="padding: 6px 8px; color: #6c757d;">...</span>
+                                @endif
+                                <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $lastPage])) }}" 
+                                   style="padding: 6px 12px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; 
+                                          border-radius: 4px; font-size: 12px;">
+                                    {{ $lastPage }}
+                                </a>
+                            @endif
+                            
+                            <!-- Next Button -->
+                            @if($currentPage < $lastPage)
+                                <a href="{{ route('log-viewer.index', array_merge(request()->all(), ['page' => $currentPage + 1])) }}" 
+                                   style="padding: 6px 10px; border: 1px solid #dee2e6; text-decoration: none; color: #495057; background: white; 
+                                          border-radius: 4px; font-size: 12px;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            @endif
                         @endif
                     </div>
-                @endif
+                    
+                    <!-- Right: Page info -->
+                    <div style="color: #6c757d; font-size: 13px;">
+                        Page {{ $currentPage }} of {{ $lastPage }}
+                    </div>
+                </div>
             @else
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6c757d;">
                     <div style="text-align: center;">
@@ -324,135 +462,64 @@
     </div>
 </div>
 
-@endsection
 
-@push('styles')
-<style>
-    .log-viewer-container {
-        margin: -20px;
-    }
-    
-    .log-file-item:hover {
-        opacity: 0.8;
-    }
-    
-    .log-entry-row:hover {
-        background-color: #f8f9fa !important;
-    }
-    
-    .dropdown-menu {
-        padding: 0;
-    }
-    
-    .dropdown-item:hover {
-        background-color: #f8f9fa;
-    }
-    
-    /* Log viewer menu - clean and proper styling */
-    .log-viewer-menu {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        min-width: 200px;
-        padding: 4px 0;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item {
-        padding: 10px 15px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none;
-        color: #495057;
-        font-size: 13px;
-        white-space: nowrap;
-        transition: background-color 0.2s ease;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item:hover {
-        background-color: #f8f9fa;
-        color: #495057;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item i {
-        width: 18px;
-        text-align: center;
-        color: #6c757d;
-        flex-shrink: 0;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item span {
-        flex: 1;
-        color: inherit;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item-danger {
-        color: #dc3545;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item-danger:hover {
-        background-color: #fff5f5;
-        color: #dc3545;
-    }
-    
-    .log-viewer-menu .log-viewer-menu-item-danger i {
-        color: #dc3545;
-    }
-    
-    .table td {
-        vertical-align: middle;
-        padding: 12px 8px;
-    }
-    
-    .badge {
-        padding: 4px 8px;
-    }
-    
-    .expand-icon {
-        cursor: pointer;
-    }
-    
-    .stack-trace-row td {
-        padding: 0 !important;
-    }
-    
-    .log-entry-row.expanded {
-        background-color: #fff !important;
-    }
-    
-    .log-entry-row.expanded td {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    
-    .log-entry-row.expanded td:last-child {
-        padding-bottom: 12px;
-    }
-    
-    .log-message-full {
-        animation: fadeIn 0.2s ease-in;
-        margin-bottom: 0;
-    }
-    
-    .stack-trace-row {
-        background-color: #f8f9fa !important;
-    }
-    
-    .stack-trace-row td {
-        border-top: none !important;
-        padding-top: 0 !important;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-@endpush
-
-@section('scripts')
 <script>
+    // Handle level checkbox change
+    function handleLevelChange(checkbox) {
+        // Submit the form
+        submitAndKeepOpen(checkbox.form);
+    }
+    
+    // Submit form and keep dropdown open after reload
+    function submitAndKeepOpen(form) {
+        sessionStorage.setItem('keepLevelFilterOpen', 'true');
+        form.submit();
+    }
+    
+    // Toggle level filter dropdown
+    function toggleLevelFilter(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('levelFilterMenu');
+        
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+            
+            // Close when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', function closeLevelMenu(e) {
+                    if (!menu.contains(e.target) && e.target.id !== 'levelFilterDropdown') {
+                        menu.style.display = 'none';
+                        sessionStorage.removeItem('keepLevelFilterOpen');
+                        document.removeEventListener('click', closeLevelMenu);
+                    }
+                });
+            }, 0);
+        } else {
+            menu.style.display = 'none';
+            sessionStorage.removeItem('keepLevelFilterOpen');
+        }
+    }
+    
+    // On page load, check if we should reopen the dropdown
+    document.addEventListener('DOMContentLoaded', function() {
+        if (sessionStorage.getItem('keepLevelFilterOpen') === 'true') {
+            const menu = document.getElementById('levelFilterMenu');
+            if (menu) {
+                menu.style.display = 'block';
+                // Set up close listener
+                setTimeout(() => {
+                    document.addEventListener('click', function closeLevelMenu(e) {
+                        if (!menu.contains(e.target) && e.target.id !== 'levelFilterDropdown') {
+                            menu.style.display = 'none';
+                            sessionStorage.removeItem('keepLevelFilterOpen');
+                            document.removeEventListener('click', closeLevelMenu);
+                        }
+                    });
+                }, 100);
+            }
+        }
+    });
+
     // Toggle log entry expand/collapse - must be global
     window.toggleLogEntry = function(row, event) {
         // Don't trigger if clicking on links
@@ -489,19 +556,39 @@
         }
     }
     
-    function toggleFileMenu(fileHash, event) {
+    function toggleFileMenu(fileHash, button, event) {
         const menuId = 'menu-' + fileHash;
         const menu = document.getElementById(menuId);
         
         // Close all other menus
-        document.querySelectorAll('.dropdown-menu').forEach(m => {
+        document.querySelectorAll('.log-viewer-menu').forEach(m => {
             if (m.id !== menuId) {
                 m.style.display = 'none';
             }
         });
         
         // Toggle current menu
-        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        if (menu.style.display === 'none') {
+            menu.style.display = 'block';
+            
+            // Position menu - show to the right of sidebar (at sidebar width + small gap)
+            const btnRect = button.getBoundingClientRect();
+            const sidebar = document.querySelector('.log-viewer-sidebar');
+            const sidebarWidth = sidebar ? sidebar.offsetWidth : 220;
+            const menuHeight = menu.offsetHeight;
+            const windowHeight = window.innerHeight;
+            
+            // Calculate top position (ensure menu doesn't go off screen)
+            let topPos = btnRect.top;
+            if (topPos + menuHeight > windowHeight - 10) {
+                topPos = windowHeight - menuHeight - 10;
+            }
+            
+            menu.style.top = topPos + 'px';
+            menu.style.left = (sidebarWidth + 5) + 'px';
+        } else {
+            menu.style.display = 'none';
+        }
         
         // Close on outside click
         setTimeout(() => {
@@ -619,12 +706,20 @@
         document.querySelectorAll('.level-checkbox').forEach(cb => {
             cb.checked = true;
         });
+        const form = document.getElementById('levelFilterForm');
+        if (form) {
+            submitAndKeepOpen(form);
+        }
     }
     
     function deselectAllLevels() {
         document.querySelectorAll('.level-checkbox').forEach(cb => {
             cb.checked = false;
         });
+        const form = document.getElementById('levelFilterForm');
+        if (form) {
+            submitAndKeepOpen(form);
+        }
     }
     
     function updateSort(value) {
@@ -660,4 +755,6 @@
         }
     });
 </script>
-@endsection
+
+</body>
+</html>

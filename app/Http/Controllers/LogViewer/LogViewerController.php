@@ -41,8 +41,12 @@ class LogViewerController extends Controller
         }
         $levels = array_filter($levels); // Remove empty values
         
+        // Check if level filter was explicitly applied (from the dropdown)
+        $levelFilterApplied = $request->has('level_filter_applied');
+        
         $filters = [
             'levels' => $levels,
+            'level_filter_applied' => $levelFilterApplied,
             'level' => $request->get('level'), // Backward compatibility
             'search' => $request->get('search'),
             'date_from' => $request->get('date_from'),

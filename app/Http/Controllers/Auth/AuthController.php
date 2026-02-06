@@ -24,7 +24,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect('/');
+            return redirect('/log-viewer');
         }
         return view('auth.login');
     }
@@ -35,7 +35,7 @@ class AuthController extends Controller
     public function showRegisterForm()
     {
         if (Auth::check()) {
-            return redirect('/');
+            return redirect('/log-viewer');
         }
         return view('auth.register');
     }
@@ -71,7 +71,7 @@ class AuthController extends Controller
                 'remember' => $remember
             ]);
             
-            return redirect()->intended('/')->with('success', 'Welcome back!');
+            return redirect()->intended('/log-viewer')->with('success', 'Welcome back!');
         }
 
         return redirect()->route('login')
@@ -107,7 +107,7 @@ class AuthController extends Controller
         // Log the user in
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Registration successful! Welcome!');
+        return redirect('/log-viewer')->with('success', 'Registration successful! Welcome!');
     }
 
     /**

@@ -4,12 +4,11 @@ namespace App\Logging;
 
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Level;
-use Monolog\LogRecord;
 
 class CustomRotatingFileHandler extends RotatingFileHandler
 {
     /**
-     * Constructor - override to use custom date format (DD-MM-YYYY)
+     * Constructor - override to use custom date format (YYYY-MM-DD)
      */
     public function __construct(
         string $filename,
@@ -19,8 +18,13 @@ class CustomRotatingFileHandler extends RotatingFileHandler
         ?int $filePermission = null,
         bool $useLocking = false
     ) {
-        // Use custom date format: 'd-m-Y' instead of default 'Y-m-d'
-        // This creates files like: laravel-04-02-2026.log
+        // Convert string level to Level enum if needed
+        if (is_string($level)) {
+            $level = Level::fromName(ucfirst(strtolower($level)));
+        }
+        
+        // Use date format: 'Y-m-d' 
+        // This creates files like: laravel-2026-02-06.log
         parent::__construct(
             $filename,
             $maxFiles,
@@ -28,7 +32,7 @@ class CustomRotatingFileHandler extends RotatingFileHandler
             $bubble,
             $filePermission,
             $useLocking,
-            'd-m-Y', // Custom date format: DD-MM-YYYY
+            'Y-m-d', // Date format: YYYY-MM-DD
             '{filename}-{date}' // Filename format
         );
     }
